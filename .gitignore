@@ -1,0 +1,8 @@
+.DS_Store
+Thumbs.db
+.env
+.env.*
+*.log
+deploy-result.json
+node_modules/
+__pycache__/
