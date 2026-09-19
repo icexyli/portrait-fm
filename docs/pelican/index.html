@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark"><title>鹈鹕的海岸公路 · PixiJS 互动动画</title>
+<style>
+:root{--paper:#fff7e9;--dim:rgba(255,247,233,.63);--mint:#b6efcc;--ink:#122d32;--edge:rgba(255,247,233,.20)}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#153940;color:var(--paper);font-family:"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif}button,input{font:inherit}button{color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}button:focus-visible,input:focus-visible{outline:2px solid var(--mint);outline-offset:5px}button:disabled{cursor:wait}#stage{position:fixed;inset:0;overflow:hidden}#stage canvas{display:block;width:100%;height:100%;touch-action:manipulation}.shade{position:fixed;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(7,28,33,.23),transparent 20%,transparent 74%,rgba(7,20,26,.78))}.edge{position:fixed;inset:20px;border:1px solid rgba(255,241,221,.12);border-radius:3px;pointer-events:none}.top{position:fixed;left:48px;right:48px;top:40px;display:flex;align-items:center;justify-content:space-between;pointer-events:none}.brand{display:flex;gap:14px;align-items:center}.logo{width:40px;height:40px;border:1px solid rgba(255,246,228,.5);border-radius:50%;position:relative}.logo:before,.logo:after{content:"";position:absolute;left:8px;top:16px;width:19px;height:7px;border:1.5px solid var(--paper);border-top:0;border-radius:0 0 30px 30px;transform:rotate(-14deg)}.logo:after{width:12px;height:3px;left:18px;top:13px;transform:rotate(-7deg)}.brand-title{font-size:14px;letter-spacing:.14em;font-weight:600}.brand-sub{font-size:9px;letter-spacing:.24em;opacity:.52;margin-top:5px}.top-right{display:flex;align-items:center;gap:10px;font-size:10px;letter-spacing:.16em}.live-dot{width:5px;height:5px;background:var(--mint);box-shadow:0 0 12px #b6efcc;border-radius:50%}.hero-copy{position:fixed;left:clamp(42px,4.1vw,82px);top:clamp(115px,17vh,185px);pointer-events:none;transition:opacity .6s,transform .6s}.eyebrow{font-size:10px;letter-spacing:.25em;display:flex;align-items:center;gap:12px;opacity:.8}.eyebrow:before{content:"";width:30px;height:1px;background:var(--paper)}h1{font-weight:600;font-size:clamp(38px,4.2vw,76px);letter-spacing:-.045em;line-height:1.27;margin:22px 0 18px;text-shadow:0 3px 25px rgba(15,41,44,.08)}.hero-copy p{font-size:clamp(10px,.84vw,13px);line-height:1.9;color:rgba(255,247,233,.72);letter-spacing:.05em;margin:0}.stamp{font-family:Georgia,serif;font-size:104px;letter-spacing:-.09em;line-height:1;opacity:.10;margin:18px 0 0 0;font-style:italic}.close-camera .hero-copy,.close-camera .hud{opacity:0;pointer-events:none}.top-right #camera{pointer-events:auto}.hud{position:fixed;right:52px;bottom:175px;text-align:right;pointer-events:none;transition:opacity .5s}.hud-label{font-size:10px;letter-spacing:.19em;color:var(--dim)}.speed-row{line-height:1;margin:12px 0 12px;display:flex;align-items:baseline;gap:8px;justify-content:flex-end}.speed-num{font-size:64px;font-weight:200;font-family:"Segoe UI",sans-serif;letter-spacing:-.05em;font-variant-numeric:tabular-nums}.speed-unit{font-size:10px;opacity:.6;letter-spacing:.1em}.speed-bars{display:flex;gap:3px;justify-content:flex-end;margin:10px 0 13px}.speed-bars i{width:3px;height:9px;background:rgba(255,247,233,.19);transition:background .2s}.speed-bars i.on{background:var(--mint)}.hud-small{font-size:10px;letter-spacing:.07em;color:var(--dim);line-height:1.9;font-variant-numeric:tabular-nums}.bottom{position:fixed;left:48px;right:48px;bottom:38px;transition:opacity .5s,transform .5s}.bottom-line{display:flex;justify-content:space-between;align-items:center;margin-bottom:21px;font-size:10px;color:var(--dim);letter-spacing:.07em}.help{display:flex;gap:16px}.help span{white-space:nowrap}.key{border:1px solid rgba(255,247,233,.23);border-bottom-width:2px;border-radius:3px;padding:2px 6px;margin-right:5px;font-family:inherit;font-size:9px;color:var(--paper)}.controlbar{display:flex;align-items:center;justify-content:space-between;gap:18px;border-top:1px solid var(--edge);padding-top:21px}.left-controls,.right-controls{display:flex;align-items:center;gap:12px}.themes{display:flex;gap:4px;border:1px solid var(--edge);padding:4px;border-radius:30px;background:rgba(8,28,33,.22)}.themes button{background:transparent;border:0;border-radius:22px;font-size:11px;letter-spacing:.03em;padding:10px 16px;transition:background .4s,color .4s}.themes button.active{background:var(--paper);color:var(--ink)}.mini{height:38px;border:1px solid var(--edge);border-radius:24px;background:rgba(8,28,33,.22);padding:0 14px;font-size:11px;transition:background .2s}.mini:hover{background:rgba(255,247,233,.13)}.mini.active{color:var(--mint);border-color:rgba(182,239,204,.5)}.speed-control{display:flex;align-items:center;gap:12px;margin:0 8px;font-size:10px;color:var(--dim)}input[type=range]{accent-color:var(--mint);width:96px;height:14px;cursor:pointer}.speed-control output{min-width:18px;color:var(--paper);font-variant-numeric:tabular-nums}.action{border:1px solid rgba(182,239,204,.65);border-radius:23px;background:var(--mint);color:#133e39;font-size:11px;padding:12px 20px;letter-spacing:.04em;user-select:none;touch-action:none}.action:hover,.action.pressed{background:#e8ffd7;box-shadow:0 0 28px rgba(163,243,203,.17)}.small-action{background:transparent;color:var(--paper);border-color:var(--edge)}#toast{position:fixed;left:50%;top:100px;transform:translate(-50%,-10px);padding:12px 24px;background:rgba(7,29,34,.8);border:1px solid var(--edge);backdrop-filter:blur(14px);border-radius:40px;font-size:12px;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:12}#toast.show{opacity:1;transform:translate(-50%,0)}#loader{position:fixed;inset:0;z-index:30;background:radial-gradient(ellipse at 50% 65%,#385b58,#102c34 70%);display:grid;place-content:center;text-align:center;transition:opacity .7s;pointer-events:none}#loader.out{opacity:0}.load-wheel{width:62px;height:62px;border:1px solid #60847d;border-top:2px solid #ffe7c7;border-radius:50%;margin:auto auto 28px;animation:spin 1.5s linear infinite}.load-wheel:after{content:"";display:block;width:1px;height:56px;margin:2px auto;background:#7ca198;transform:rotate(30deg)}@keyframes spin{to{transform:rotate(360deg)}}#loader h2{font-size:20px;letter-spacing:.18em;font-weight:400;margin:0 0 14px}#loader p{font-size:11px;letter-spacing:.07em;color:#a4b8ad}#loading-detail{font-size:10px;color:#76978f;margin-top:14px}.quiet .hero-copy,.quiet .hud,.quiet .bottom,.quiet .top,.quiet .edge{opacity:0;pointer-events:none}.quiet-hint{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);font-size:10px;color:#fff9;opacity:0;pointer-events:none;transition:opacity .3s}.quiet .quiet-hint{opacity:.65}.pause-badge{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#153d3db3;backdrop-filter:blur(8px);padding:18px 35px;border:1px solid var(--edge);border-radius:50px;font-size:13px;display:none;pointer-events:none}body.paused .pause-badge{display:block}.drawer{position:fixed;right:28px;top:95px;width:360px;max-height:calc(100vh - 220px);overflow:auto;background:rgba(10,32,37,.96);border:1px solid var(--edge);border-radius:12px;padding:25px;z-index:18;backdrop-filter:blur(16px);display:none}.drawer.open{display:block}.drawer h2{font-size:18px;font-weight:500;margin:0 0 20px}.drawer p{font-size:12px;color:#c3d2c6;line-height:1.9;margin:12px 0}.drawer b{font-weight:500;color:var(--paper)}.drawer .close{position:absolute;right:16px;top:12px;background:none;border:0;font-size:23px;color:#b1c4b7}.drawer small{font-size:10px;line-height:1.8;display:block;color:#879f99;border-top:1px solid var(--edge);margin-top:16px;padding-top:16px}#status{white-space:nowrap}#fps{display:inline-block;min-width:15px}#film{letter-spacing:.06em}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}@media(max-width:1100px){.speed-control{display:none}.top{left:30px;right:30px;top:30px}.bottom{left:30px;right:30px;bottom:28px}.right-controls{gap:7px}.mini{padding:0 10px}.hero-copy{left:40px}.hud{right:35px}.help{gap:9px}.bottom-line{font-size:9px}.themes button{padding:9px 12px}.action{padding:11px 15px}#infoBtn{display:none}}@media(max-width:760px){.hero-copy{top:110px;left:27px}.hero-copy h1{font-size:34px}.hero-copy p,.stamp,.hud,.help,.top-right,#capture,#film,.speed-control{display:none}.top{left:25px;right:25px;top:24px}.bottom{left:22px;right:22px;bottom:24px}.controlbar{flex-wrap:wrap;gap:12px}.left-controls,.right-controls{gap:7px}.bottom-line{margin-bottom:12px}.brand-title{font-size:12px}.logo{width:34px;height:34px}.themes button{font-size:10px;padding:8px 10px}.action{font-size:10px;padding:10px 13px}.mini{font-size:10px;height:33px}.edge{inset:12px}.drawer{right:16px;left:16px;width:auto}.quiet-hint{white-space:nowrap}}#seasonFlash{position:fixed;inset:0;z-index:9;pointer-events:none;opacity:0;mix-blend-mode:screen}
+#seasonFlash.play{animation:season-flash .85s ease-out forwards}
+@keyframes season-flash{0%{opacity:0}16%{opacity:.48}100%{opacity:0}}
+.advanced-controls{display:none;align-items:center;gap:12px}.show-advanced .advanced-controls{display:flex}.quick-tip{opacity:.65}.key-inline{border:1px solid rgba(255,247,233,.25);border-bottom-width:2px;border-radius:3px;padding:2px 6px;margin:0 3px;font-size:9px}.rarity-badge{font-size:10px;letter-spacing:.15em;color:var(--mint);margin-top:8px}
+@media(max-width:760px){.show-advanced .advanced-controls{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){.load-wheel{animation:none}#seasonFlash.play{animation:none;opacity:0}}
+
+</style>
+</head>
+<body>
+<div id="stage" role="img" aria-label="鹈鹕骑自行车沿海岸公路前进。支持昼夜、春夏秋冬、天气和五档装扮品阶切换。"></div>
+<div class="shade"></div><div id="seasonFlash"></div><div class="edge"></div>
+<header class="top"><div class="brand"><div class="logo"></div><div><div class="brand-title">鹈鹕的海岸公路</div><div class="brand-sub">PELICAN COAST · A LITTLE ADVENTURE</div></div></div><div class="top-right"><span class="live-dot"></span>键盘优先交互 <span style="opacity:.35;margin:0 9px">/</span><span class="quick-tip">按 <span class="key-inline">?</span> 查看按键</span></div></header>
+<section class="hero-copy"><div class="eyebrow" id="sceneLabel">落日海岸 · GOLDEN HOUR</div><h1 id="title">沿着海岸，<br>一直向前。</h1><p id="subtitle">落日、海风，还有一位不太寻常的骑手。<br>放慢一点，或者追一追风。</p><div class="stamp">Ride on.</div></section>
+<aside class="hud"><div class="hud-label" id="rideState">海岸巡航</div><div class="rarity-badge" id="rarityBadge">上品 · 秋装</div><div class="speed-row"><span class="speed-num" id="speedNumber">24</span><span class="speed-unit">km/h</span></div><div class="speed-bars" id="speedBars"></div><div class="hud-small"><span id="cadence">0</span> 次 / 分 · 踏频<br><span id="distance">0.00</span> km · 本次骑行</div></aside>
+<footer class="bottom"><div class="bottom-line"><div class="help"><span><kbd class="key">Shift</kbd>加速</span><span><kbd class="key">空格</kbd>起跳</span><span><kbd class="key">1~4</kbd>四季</span><span><kbd class="key">O</kbd>装扮品阶</span><span><kbd class="key">K</kbd>按钮面板</span><span><kbd class="key">?</kbd>说明</span></div><div id="status"><span id="engine">正在准备画面</span><span style="opacity:.3;padding:0 9px">/</span><span id="fps">—</span> FPS</div></div>
+<div class="controlbar"><div class="left-controls"><div class="themes" aria-label="切换场景"><button id="sunset" class="active" aria-pressed="true">落日海岸</button><button id="night" aria-pressed="false">月色航线</button></div><div class="advanced-controls"><div class="themes" aria-label="切换季节"><button id="spring">春</button><button id="summer" class="active">夏</button><button id="autumn">秋</button><button id="winter">冬</button></div><button class="mini active" id="outfit">装扮：上品</button><button class="mini" id="rain">雨景</button><div class="speed-control"><label for="speed">巡航速度</label><input id="speed" type="range" min="8" max="42" value="24"><output id="speedValue">24</output></div></div></div><div class="right-controls advanced-controls"><button class="mini" id="camera">镜头：全景</button><button class="mini" id="pause">暂停</button><button class="mini" id="sound">音效：关</button><button class="mini" id="capture">截图</button><button class="mini" id="film">纯享</button><button class="mini" id="fullscreen">全屏</button><button class="mini" id="infoBtn">说明</button><button class="action small-action" id="jump">起跳 ↑</button><button class="action" id="boost">按住加速 ↗</button></div></div></footer>
+<div id="toast" role="status" aria-live="polite"></div><div class="quiet-hint">按 H 或双击画面恢复界面</div><div class="pause-badge">已暂停 · 按 P 或点击「继续」</div>
+<aside class="drawer" id="info"><button class="close" aria-label="关闭说明" id="closeInfo">×</button><h2>这段骑行是怎样做出来的？</h2><p><b>画面</b><br>所有角色、车架、灯塔和植物均由代码绘制。画布先生成高分辨率贴图，PixiJS 负责分层组织、合成与实时运动。没有预录视频，没有动画 GIF，也没有 SVG 动画。</p><p><b>机械与姿态</b><br>轮胎滚动、齿轮传动与脚踏相互联动；脚蹼贴着踏板，双腿通过几何计算弯曲。围巾使用带长度约束的柔性链，跟随风速和身体运动。起跳具有准备、腾空和落地动作。</p><p><b>场景</b><br>增加春夏秋冬四季系统。春有花瓣、夏有萤光、秋有落叶、冬有飘雪；季节与昼夜、阵雨可以自由组合。</p><p><b>装扮品阶</b><br>装扮分为凡品、良品、上品、珍品、仙品。良品增加旅行包；上品增加勋章与旗带；珍品增加披风和轮组辉光；仙品增加冠羽、光环和星屑拖尾。基础衣服会跟随四季改变颜色与款式。</p><p><b>交互</b><br>默认只显示场景切换，其它按钮隐藏。Shift 加速 · 空格起跳 · B 车铃 · P 暂停<br>N 昼夜 · R 雨景 · M 音效 · 1/2/3/4 四季 · O 装扮品阶<br>↑/↓ 速度 · C 镜头 · H 纯享 · F 全屏 · K 按钮面板 · ? 说明</p><small id="renderInfo">引擎初始化中。</small><small>主题灵感：Simon Willison 的鹈鹕骑自行车绘图挑战。场景和角色为本页原创程序绘制。速度、距离与踏频用于动画演示。</small></aside>
+<div id="loader"><div class="load-wheel"></div><h2>海风正在赶来</h2><p>绘制骑手、海岸和一束落日。</p><div id="loading-detail">正在加载 PixiJS</div></div>
+<script>
+/* Only used when PixiJS/CDN or WebGL is unavailable. This is a separately labelled
+   Canvas2D compatibility renderer, not a replacement library branded as PixiJS. */
+function makeCanvasCompatibility(){
+  class Pt { constructor(x=0,y=0){this.x=x;this.y=y} set(x=0,y=x){this.x=x;this.y=y;return this} copyFrom(p){this.x=p.x;this.y=p.y;return this} }
+  class Container {
+    constructor(){this.children=[];this.position=new Pt;this.scale=new Pt(1,1);this.pivot=new Pt;this.skew=new Pt;this.rotation=0;this.alpha=1;this.visible=true;this.renderable=true;this.parent=null;this.blendMode='normal';}
+    get x(){return this.position.x} set x(v){this.position.x=v} get y(){return this.position.y} set y(v){this.position.y=v}
+    addChild(...items){items.forEach(c=>{if(c.parent)c.parent.removeChild(c);c.parent=this;this.children.push(c)});return items[0]}
+    removeChild(c){let i=this.children.indexOf(c);if(i>=0)this.children.splice(i,1);c.parent=null;return c}
+    destroy(){this.children=[];this.parent?.removeChild(this)}
+  }
+  class Texture {constructor(c,res=1){this.canvas=c;this.source={resource:c,resolution:res,update(){}};this.width=c.width/res;this.height=c.height/res} static from(c){return new Texture(c)} destroy(){} }
+  class Sprite extends Container {constructor(t){super();this.texture=t instanceof Texture?t:t?.texture;this.anchor=new Pt;this.tint=0xffffff}
+    get width(){return this.texture.width*Math.abs(this.scale.x)} set width(n){this.scale.x=n/this.texture.width}
+    get height(){return this.texture.height*Math.abs(this.scale.y)} set height(n){this.scale.y=n/this.texture.height}
+  }
+  const css=c=>typeof c==='number'?'#'+Math.round(c).toString(16).padStart(6,'0'):c||'#ffffff';
+  class Graphics extends Container {
+    constructor(){super();this.ops=[];this.path=[];this.committed=false}
+    clear(){this.ops=[];this.path=[];this.committed=false;return this}
+    start(){if(this.committed){this.path=[];this.committed=false}}
+    moveTo(...a){this.start();this.path.push(['moveTo',a]);return this}
+    lineTo(...a){this.start();this.path.push(['lineTo',a]);return this}
+    bezierCurveTo(...a){this.start();this.path.push(['bezierCurveTo',a]);return this}
+    quadraticCurveTo(...a){this.start();this.path.push(['quadraticCurveTo',a]);return this}
+    closePath(){this.path.push(['closePath',[]]);return this}
+    rect(...a){this.start();this.path.push(['rect',a]);return this}
+    roundRect(...a){this.start();this.path.push(['roundRect',a]);return this}
+    circle(x,y,r){this.start();this.path.push(['moveTo',[x+r,y]],['arc',[x,y,r,0,Math.PI*2]]);return this}
+    ellipse(x,y,rx,ry){this.start();this.path.push(['moveTo',[x+rx,y]],['ellipse',[x,y,rx,ry,0,0,Math.PI*2]]);return this}
+    arc(...a){this.start();this.path.push(['arc',a]);return this}
+    poly(p,close=true){this.start();for(let i=0;i<p.length;i+=2)this.path.push([i?'lineTo':'moveTo',[p[i],p[i+1]]]);if(close)this.closePath();return this}
+    fill(style){this.ops.push({path:this.path.slice(),style:typeof style==='object'?style:{color:style},kind:'fill'});this.committed=true;return this}
+    stroke(style){this.ops.push({path:this.path.slice(),style:typeof style==='object'?style:{color:style},kind:'stroke'});this.committed=true;return this}
+  }
+  const tintCache=new WeakMap;
+  function getImage(s){let c=s.texture.canvas;if(s.tint===0xffffff||s.tint==null)return c;
+    let map=tintCache.get(c);if(!map){map=new Map;tintCache.set(c,map)}if(map.has(s.tint))return map.get(s.tint);
+    const b=document.createElement('canvas');b.width=c.width;b.height=c.height;let g=b.getContext('2d');g.drawImage(c,0,0);g.globalCompositeOperation='source-in';g.fillStyle=css(s.tint);g.fillRect(0,0,b.width,b.height);map.set(s.tint,b);return b;
+  }
+  function draw(ctx,o){if(!o.visible||!o.renderable||o.alpha<=0)return;ctx.save();ctx.translate(o.x,o.y);ctx.rotate(o.rotation);ctx.transform(o.scale.x,Math.tan(o.skew.y),Math.tan(o.skew.x),o.scale.y,0,0);ctx.translate(-o.pivot.x,-o.pivot.y);ctx.globalAlpha*=o.alpha;
+    if(o.blendMode==='add')ctx.globalCompositeOperation='lighter';else if(o.blendMode==='multiply')ctx.globalCompositeOperation='multiply';else if(o.blendMode==='screen')ctx.globalCompositeOperation='screen';
+    if(o instanceof Sprite&&o.texture?.canvas){const t=o.texture;ctx.drawImage(getImage(o),-o.anchor.x*t.width,-o.anchor.y*t.height,t.width,t.height)}
+    if(o instanceof Graphics)for(const p of o.ops){ctx.save();ctx.beginPath();for(const [m,a] of p.path)ctx[m](...a);ctx.globalAlpha*=p.style.alpha??1;if(p.kind==='fill'){ctx.fillStyle=css(p.style.color);ctx.fill()}else{ctx.strokeStyle=css(p.style.color);ctx.lineWidth=p.style.width??1;ctx.lineCap=p.style.cap||'round';ctx.lineJoin=p.style.join||'round';ctx.stroke()}ctx.restore()}
+    for(const c of o.children)draw(ctx,c);ctx.restore();
+  }
+  class Application {
+    constructor(){this.stage=new Container;this.canvas=document.createElement('canvas')}
+    async init(opt){this.opt=opt;this.ctx=this.canvas.getContext('2d',{alpha:false});let resolution=opt.resolution||1;
+      this.renderer={resolution,width:opt.width,height:opt.height,resize:(w,h)=>{this.renderer.width=w;this.renderer.height=h;this.canvas.width=Math.round(w*resolution);this.canvas.height=Math.round(h*resolution);this.canvas.style.width=w+'px';this.canvas.style.height=h+'px'},render:({container})=>{const c=this.ctx;c.setTransform(resolution,0,0,resolution,0,0);c.globalAlpha=1;c.globalCompositeOperation='source-over';c.fillStyle='#122b32';c.fillRect(0,0,this.renderer.width,this.renderer.height);draw(c,container)}};this.renderer.resize(opt.width,opt.height)
+    }
+    render(){this.renderer.render({container:this.stage})}
+  }
+  return {Container,Texture,Sprite,Graphics,Application,VERSION:'compat',isCompatibility:true};
+}
+
+</script>
+<script>
+/* PELICAN COAST / original procedural scene
+ * PixiJS 8 renderer; no SVG, pre-rendered video, external artwork or build step.
+ * The small Canvas2D renderer is an explicit offline/accessibility fallback.
+ */
+(async()=>{
+'use strict';
+const $=id=>document.getElementById(id), TAU=Math.PI*2, clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v)), lerp=(a,b,t)=>a+(b-a)*t;
+const ease=(a,b,k,dt)=>lerp(a,b,1-Math.exp(-k*dt));
+let seed=89127;const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
+const random=(a,b)=>a+(b-a)*rand(), mod=(n,m)=>((n%m)+m)%m;
+const W=1600,H=900,GROUND=749,RADIUS=91,GEAR=2.62,METERS_PER_PIXEL=.34/91;
+const state={time:0,speed:24,targetSpeed:24,boost:0,boostHeld:false,night:0,targetNight:0,rain:0,targetRain:0,paused:false,distance:0,wheel:0,crank:0,jumpT:-1,jumpY:0,jumpPitch:0,landing:0,mouseX:0,mouseY:0,camX:0,camY:0,bell:0,quiet:false,sound:false,quality:1,camera:0,cameraZoom:1,cameraFocusX:900,cameraFocusY:530,cameraScreenX:900,cameraScreenY:530,season:1,outfitTier:2};
+const TEST=new URLSearchParams(location.search);
+const SEASON_KEYS=['spring','summer','autumn','winter'],SEASON_NAMES=['春','夏','秋','冬'];
+const TIER_NAMES=['凡品','良品','上品','珍品','仙品'];
+const TIER_DESC=['轻装骑行','旅行包','勋章与旗带','披风与轮组辉光','冠羽、光环与星屑拖尾'];
+const SEASON_PALETTES=[{main:0x8bcf9d,accent:0xffb8d2},{main:0xf3b45f,accent:0x4fc5c0},{main:0xb96e35,accent:0xf2d078},{main:0x86add0,accent:0xe6f7ff}];
+function seasonIndex(){return Math.max(0,Math.min(3,state.season|0))}function tierIndex(){return Math.max(0,Math.min(4,state.outfitTier|0))}
+function script(url,timeout=3000){return new Promise((resolve,reject)=>{let done=false;const s=document.createElement('script');const timer=setTimeout(()=>{if(!done){done=true;s.remove();reject(new Error('CDN timeout'))}},timeout);s.src=url;s.onload=()=>{if(!done){done=true;clearTimeout(timer);resolve(window.PIXI)}};s.onerror=()=>{if(!done){done=true;clearTimeout(timer);s.remove();reject(new Error('CDN unavailable'))}};document.head.appendChild(s)})}
+let P, mode='PixiJS';
+if(TEST.has('compat')){P=makeCanvasCompatibility();mode='Canvas2D'}else{
+  try{P=window.PIXI||await Promise.any([
+    script('https://cdnjs.cloudflare.com/ajax/libs/pixi.js/8.6.6/pixi.min.js'),
+    script('https://cdn.jsdelivr.net/npm/pixi.js@8.6.6/dist/pixi.min.js')
+  ])}catch(e){P=makeCanvasCompatibility();mode='Canvas2D'}
+}
+const {Container,Graphics,Sprite,Texture}=P;
+let app=new P.Application();
+try{await app.init({width:innerWidth,height:innerHeight,resolution:Math.min(devicePixelRatio||1,1.75),autoDensity:true,antialias:true,background:0x15343b,preference:'webgl',powerPreference:'high-performance',autoStart:false,preserveDrawingBuffer:true})}
+catch(e){console.warn('WebGL unavailable; using the labelled Canvas2D compatibility renderer.',e);P=makeCanvasCompatibility();app=new P.Application();await app.init({width:innerWidth,height:innerHeight,resolution:Math.min(devicePixelRatio||1,1.5)});mode='Canvas2D';location.hash='webgl-unavailable';}
+/* If WebGL init fails, reconstruct with the matching node classes by reloading
+   into the explicitly selected compatibility mode rather than mixing engines. */
+if(mode==='Canvas2D'&&!P.isCompatibility){throw new Error('Renderer initialization failed')}
+if(mode==='Canvas2D'&&!(new Container instanceof P.Container)){const u=new URL(location.href);u.searchParams.set('compat','1');location.replace(u);return}
+$('stage').appendChild(app.canvas);$('loading-detail').textContent='正在绘制高分辨率角色与场景';
+const root=new Container();app.stage.addChild(root);const world=new Container();root.addChild(world);
+const layers={};for(const name of ['sky','stars','clouds','sun','islands','sea','farCoast','boats','promenade','road','reflection','shadows','dustBack','rider','particles','foreground','rain','grade']){layers[name]=new Container;world.addChild(layers[name])}
+const assets=new Map;
+function tex(key,b,fn,res=2){if(assets.has(key))return assets.get(key);const c=document.createElement('canvas');c.width=Math.ceil(b[2]*res);c.height=Math.ceil(b[3]*res);const ctx=c.getContext('2d');ctx.scale(res,res);ctx.translate(-b[0],-b[1]);ctx.lineCap='round';ctx.lineJoin='round';fn(ctx);const out={texture:Texture.from(c),canvas:c,b,res};assets.set(key,out);return out}
+function art(key,b,fn,res=2){const a=tex(key,b,fn,res),c=new Container,s=new Sprite(a.texture);s.position.set(a.b[0],a.b[1]);s.scale.set(1/a.res);c.addChild(s);return c}
+function simpleSprite(a){let s=new Sprite(a.texture);s.scale.set(1/a.res);return s}
+function grad(c,x,y,xx,yy,stops){let g=c.createLinearGradient(x,y,xx,yy);stops.forEach(([p,col])=>g.addColorStop(p,col));return g}
+function radial(c,x,y,r,stops){let g=c.createRadialGradient(x,y,0,x,y,r);stops.forEach(([p,col])=>g.addColorStop(p,col));return g}
+function path(c,fn,fill,stroke,width=1){c.beginPath();fn(c);if(fill){c.fillStyle=fill;c.fill()}if(stroke){c.strokeStyle=stroke;c.lineWidth=width;c.stroke()}}
+function ell(c,x,y,rx,ry,fill,rotation=0){c.beginPath();c.ellipse(x,y,rx,ry,rotation,0,TAU);c.fillStyle=fill;c.fill()}
+function line(c,pts,col,width=1){c.beginPath();c.moveTo(pts[0],pts[1]);for(let i=2;i<pts.length;i+=2)c.lineTo(pts[i],pts[i+1]);c.strokeStyle=col;c.lineWidth=width;c.stroke()}
+function gline(g,x,y,xx,yy,col,width=1,alpha=1){g.moveTo(x,y).lineTo(xx,yy).stroke({color:col,width,alpha,cap:'round'})}
+function glow(x,y,sx,sy,col,alpha,parent,blend='screen'){
+ const a=tex('glow'+col,[-64,-64,128,128],c=>{c.fillStyle=radial(c,0,0,64,[[0,col],[.22,col+'aa'],[1,col+'00']]);c.fillRect(-64,-64,128,128)},1);
+ const s=new Sprite(a.texture);s.anchor.set(.5);s.position.set(x,y);s.scale.set(sx/64,sy/64);s.alpha=alpha;s.blendMode=blend;parent.addChild(s);return s;
+}
+// ------------------------------------------------------------ Sky / light
+const daySky=art('daySky',[-100,-80,1800,1060],c=>{c.fillStyle=grad(c,0,0,0,655,[[0,'#193e47'],[.24,'#688e8b'],[.47,'#e3b49a'],[.64,'#fbc592'],[.83,'#b1b8a1'],[1,'#376c70']]);c.fillRect(-100,-80,1800,1060);c.fillStyle=radial(c,506,338,660,[[0,'#ffdab855'],[.5,'#fac9aa16'],[1,'#f5af9900']]);c.fillRect(-100,-80,1500,940)},1);
+const nightSky=art('nightSky',[-100,-80,1800,1060],c=>{c.fillStyle=grad(c,0,0,0,680,[[0,'#071d2d'],[.32,'#123349'],[.65,'#456379'],[.87,'#355564'],[1,'#112f3f']]);c.fillRect(-100,-80,1800,1060);c.fillStyle=radial(c,530,300,580,[[0,'#a4deef18'],[1,'#4a9dbb00']]);c.fillRect(-100,-80,1500,900)},1);nightSky.alpha=0;layers.sky.addChild(daySky,nightSky);
+const sunHalo=glow(510,371,295,244,'#ffcb91',.54,layers.sun);
+const sunDisc=art('sunDisc',[-117,-117,234,234],c=>{ell(c,0,0,112,112,grad(c,0,-112,0,112,[[0,'#fff2c2'],[.54,'#ffdc9d'],[1,'#ffa16c']]));c.save();c.globalCompositeOperation='destination-out';for(let i=0;i<10;i++){c.globalAlpha=.03+i*.009;c.fillRect(-120,34+i*9,240,1+i*.36)}c.restore()},2);sunDisc.position.set(510,371);layers.sun.addChild(sunDisc);
+const moonHalo=glow(526,265,202,202,'#b8eaff',0,layers.sun);
+const moon=art('moon',[-68,-68,136,136],c=>{ell(c,0,0,51,51,radial(c,-13,-18,90,[[0,'#fffae7'],[.7,'#cbdddd'],[1,'#93b3c0']]));c.save();c.globalCompositeOperation='source-atop';for(let i=0;i<22;i++){let x=random(-48,48),y=random(-48,48),r=random(2,10);ell(c,x,y,r,r*.8,'#688ca315')}c.restore();},2);moon.position.set(526,265);moon.alpha=0;layers.sun.addChild(moon);
+const stars=[];let starTex=tex('star',[-3,-3,6,6],c=>{c.fillStyle=radial(c,0,0,3,[[0,'#ffffff'],[.25,'#e5faf5e0'],[1,'#e3f9ff00']]);c.fillRect(-3,-3,6,6)},2);
+for(let i=0;i<135;i++){let s=new Sprite(starTex.texture);s.anchor.set(.5);s.position.set(random(-70,1690),random(-20,412));s.scale.set(random(.2,.57));s.alpha=0;layers.stars.addChild(s);stars.push({s,phase:rand()*TAU,mag:random(.35,.95)})}
+const clouds=[];
+for(let n=0;n<7;n++){
+ let a=art('cloud'+n,[-90,-50,760,190],c=>{
+  // Broad, irregular wisps are drawn once with soft edges, not stacks of discs.
+  c.save();c.filter='blur(5px)';
+  for(let k=0;k<3;k++){
+   let x=-28+k*23,y=40+k*9,wide=410+k*31;
+   path(c,p=>{p.moveTo(x,y+15);p.bezierCurveTo(x+68,y+5,x+88,y-14,x+154,y-7);p.bezierCurveTo(x+183,y-27,x+229,y-18,x+249,y-5);p.bezierCurveTo(x+300,y-16,x+350,y+5,x+wide,y+7);p.bezierCurveTo(x+359,y+19,x+201,y+19,x+125,y+21);p.bezierCurveTo(x+51,y+22,x+18,y+18,x,y+15);p.closePath()},grad(c,0,y-30,0,y+24,[[0,'#fce8c600'],[.46,'#f9dfbf14'],[.75,'#ffd5b12b'],[1,'#e7b9a000']]));
+  }
+  c.filter='blur(2px)';
+  for(let i=0;i<5;i++){const x=random(20,300),y=77+i*4;path(c,p=>{p.moveTo(x,y);p.bezierCurveTo(x+54,y-3,x+141,y+2,x+random(160,260),y+1)},null,'#ffdec00e',random(2,4))}
+  c.restore();
+ },1.5);a.position.set(n*340-380,80+(n%3)*90);a.scale.set(random(.8,1.5),random(.7,1.15));a.alpha=.82;layers.clouds.addChild(a);clouds.push({s:a,x:a.x,y:a.y,speed:random(3,8)})
+}
+// ------------------------------------------------------------ Distant land
+const islandLayers=[];
+for(let k=0;k<3;k++){
+ const a=art('island'+k,[-100,315,2800,290],c=>{
+ const base=469+k*5;path(c,p=>{p.moveTo(-100,base);for(let x=-100;x<=2700;x+=65){const h=((Math.sin(x*.007+k*2)+Math.sin(x*.018+.3)*.31)*32+38)*(.22+.78*Math.abs(Math.sin((x-510)*.0018)));p.lineTo(x,base-h)}p.lineTo(2700,600);p.lineTo(-100,600);p.closePath()},grad(c,0,base-100,0,600,[[0,['#7b9390','#4e7b7c','#356b70'][k]],[1,['#94a699','#5d8b88','#255962'][k]]]));
+ for(let i=0;i<60;i++){let x=random(30,2680),y=base-random(0,8);line(c,[x,y,x+random(8,25),y],['#e4c5a229','#98b2a729','#66a49c2e'][k],1)}
+ },1);a.alpha=[.46,.53,.77][k];layers.islands.addChild(a);islandLayers.push({s:a,offset:0,factor:[.0015,.003,.006][k]})
+}
+// ------------------------------------------------------------ Sea, with individual light ripples
+const seaBase=art('seaBase',[-100,442,1800,280],c=>{c.fillStyle=grad(c,0,442,0,700,[[0,'#71928b'],[.1,'#4e8583'],[.45,'#2d777c'],[1,'#124a57']]);c.fillRect(-100,442,1800,280)},1);
+const seaNight=art('seaNight',[-100,442,1800,280],c=>{c.fillStyle=grad(c,0,442,0,700,[[0,'#2f5568'],[.25,'#194758'],[1,'#102c3c']]);c.fillRect(-100,442,1800,280)},1);seaNight.alpha=0;layers.sea.addChild(seaBase,seaNight);
+const shimmerDay=glow(510,510,186,78,'#ffd6a6',.22,layers.sea),shimmerNight=glow(526,503,136,59,'#b0e8f5',0,layers.sea);
+const waveTex=tex('wave',[-32,-2,64,4],c=>{c.fillStyle=grad(c,-32,0,32,0,[[0,'#ffffff00'],[.25,'#ffffff9c'],[.5,'#ffffff'],[.8,'#ffffff7a'],[1,'#ffffff00']]);c.fillRect(-32,-1,64,2)},1);
+const waves=[];for(let i=0;i<260;i++){const yy=random(445,665),dep=(yy-442)/223;const s=new Sprite(waveTex.texture);s.anchor.set(.5);s.position.set(random(-80,1680),yy);s.scale.set(random(.07,.9)*(dep+.12),random(.24,.8));s.tint=i%3===0?0xafd7bc:0x79b7b4;s.alpha=random(.08,.30);layers.sea.addChild(s);waves.push({s,baseX:s.x,baseY:yy,phase:rand()*TAU,dep,speed:random(1,7)})}
+const reflectionWaves=[];for(let i=0;i<160;i++){const dep=rand()**1.45,y=444+dep*201;let width=random(3,33)*(dep+.24),x=510+random(-1,1)*(30+dep*145);const s=new Sprite(waveTex.texture);s.anchor.set(.5);s.position.set(x,y);s.width=width;s.height=random(.6,1.9);s.tint=0xffddad;layers.sea.addChild(s);reflectionWaves.push({s,x,y,width,phase:rand()*TAU,a:random(.18,.78),dep})}
+// ------------------------------------------------------------ Lighthouse, cliff, coastal town
+const coast=art('coast',[-80,-195,760,300],c=>{
+ path(c,p=>{p.moveTo(-70,67);p.bezierCurveTo(12,18,58,18,101,-7);p.bezierCurveTo(194,-35,217,-49,282,-44);p.bezierCurveTo(368,-41,443,-26,485,-3);p.bezierCurveTo(550,10,582,48,670,60);p.lineTo(670,95);p.lineTo(-70,95);p.closePath()},grad(c,0,-50,0,95,[[0,'#437474'],[.31,'#315e62'],[1,'#244e57']]));
+ for(let i=0;i<44;i++){let x=random(30,550),y=-25+Math.abs(x-285)*.14;path(c,p=>{p.moveTo(x,y);p.lineTo(x+random(5,17),y+26);p.lineTo(x+random(9,26),y+45)},null,'#73938240',1)}
+ path(c,p=>{p.moveTo(190,-30);p.bezierCurveTo(252,-50,299,-42,333,-34);p.bezierCurveTo(360,-27,366,-15,422,-2)},null,'#c3b79988',3);
+ // tower
+ path(c,p=>{p.moveTo(251,-33);p.lineTo(267,-146);p.lineTo(289,-146);p.lineTo(307,-31);p.closePath()},grad(c,250,0,307,0,[[0,'#b4d0be'],[.33,'#f6e2bd'],[.70,'#dbd4b4'],[1,'#608b85']]));
+ path(c,p=>{p.moveTo(257,-76);p.lineTo(262,-109);p.lineTo(294,-109);p.lineTo(300,-76);p.closePath()},'#b86246');
+ c.fillStyle='#224d55';c.fillRect(265,-159,27,17);c.fillStyle='#d6c9a3';c.fillRect(269,-156,19,12);line(c,[268,-157,268,-141,279,-141,279,-157,290,-157,290,-141],'#244b51',2);
+ path(c,p=>{p.moveTo(260,-159);p.lineTo(278,-177);p.lineTo(299,-159);p.closePath()},'#2e5659');line(c,[278,-177,278,-187],'#173e48',2);ell(c,278,-187,2,2,'#ecc79b');
+ c.fillStyle='#274e55';c.fillRect(275,-58,10,25);line(c,[250,-140,305,-140],'#183e48',3);line(c,[253,-140,253,-150,302,-150,302,-140],'#456c66',1);
+ // keeper's house, harbor village
+ for(let i=0;i<6;i++){let x=340+i*32,y=-16+i*4;c.fillStyle=['#ccac85','#acc4b3','#bda47f'][i%3];c.fillRect(x,y-25,25,25);path(c,p=>{p.moveTo(x-4,y-25);p.lineTo(x+12,y-35);p.lineTo(x+28,y-25)},'#7e6959');c.fillStyle='#315b5c';c.fillRect(x+5,y-16,5,7);c.fillRect(x+16,y-16,5,7)}
+ // trees
+ for(let i=0;i<16;i++){const x=80+i*12,y=-15-Math.sin(i*.35)*20;line(c,[x,y+13,x,y-11],'#234f55',2);path(c,p=>{p.moveTo(x,y-25);p.lineTo(x-8,y+1);p.lineTo(x+9,y+1);p.closePath()},'#315d5d')}
+},2);coast.position.set(1070,569);coast.scale.set(.77);layers.farCoast.addChild(coast);
+const coastShade=art('coastShade',[-80,-195,720,290],c=>{c.fillStyle='#133f5260';c.fillRect(-80,-195,720,290)},1); // night treatment uses alpha and source art, no opaque mask
+const beacon=new Graphics();layers.farCoast.addChild(beacon);
+const beaconGlow=glow(1284,450,15,13,'#ffefd0',.06,layers.farCoast);
+const tinyWindows=[];for(let i=0;i<12;i++){const s=glow(1070+(345+Math.floor(i/2)*32+(i%2)*11)*.77,569+(-32+Math.floor(i/2)*4)*.77,4,2,'#ffdf9b',0,layers.farCoast);tinyWindows.push(s)}
+const yacht=art('yacht',[-35,-89,105,113],c=>{path(c,p=>{p.moveTo(-24,0);p.lineTo(61,0);p.lineTo(44,12);p.lineTo(-13,12);p.closePath()},'#f6d1a3');line(c,[12,0,12,-85],'#263f46',1.5);path(c,p=>{p.moveTo(9,-81);p.quadraticCurveTo(-21,-48,-24,-9);p.lineTo(9,-9);p.closePath()},grad(c,-20,0,14,0,[[0,'#c3d9cd'],[1,'#fff2cf']]));path(c,p=>{p.moveTo(16,-69);p.lineTo(47,-11);p.lineTo(16,-11);p.closePath()},'#edb58c');line(c,[-30,19,64,19],'#8eb2a869',1)},1.5);yacht.position.set(726,533);yacht.scale.set(.55);layers.boats.addChild(yacht);
+const gulls=[];for(let i=0;i<9;i++){const g=new Graphics;layers.boats.addChild(g);gulls.push({g,x:random(130,1550),y:random(205,396),scale:random(.35,.95),phase:rand()*TAU})}
+// ------------------------------------------------------------ Road, railing and foreground
+const railing=art('railing',[-20,-5,660,95],c=>{
+ c.fillStyle='#376366';c.fillRect(-20,8,660,8);c.fillStyle='#f5c5a482';c.fillRect(-20,6,660,2);c.fillStyle='#163d47';c.fillRect(-20,42,660,4);
+ for(let x=0;x<660;x+=110){path(c,p=>{p.moveTo(x,8);p.lineTo(x+5,8);p.lineTo(x+9,87);p.lineTo(x+1,87);p.closePath()},grad(c,x,0,x+9,0,[[0,'#68918a'],[.35,'#416e70'],[1,'#173e48']]));c.fillStyle='#bbbea0';c.fillRect(x-2,6,12,3)}
+},1.5);const railCopies=[];for(let i=0;i<4;i++){let r=i===0?railing:art('railing');r.position.set(i*640-300,625);layers.promenade.addChild(r);railCopies.push(r)}
+const roadDay=art('roadDay',[-120,679,1840,310],c=>{c.fillStyle=grad(c,0,679,0,985,[[0,'#79837b'],[.13,'#566d6a'],[.46,'#355156'],[1,'#1b343f']]);c.fillRect(-120,679,1840,310);c.fillStyle='#b9b69a';c.fillRect(-120,679,1840,5);c.fillStyle='#294c53';c.fillRect(-120,685,1840,7);c.fillStyle='#eece9f33';c.fillRect(-120,695,1840,2)},1);
+const roadNight=art('roadNight',[-120,679,1840,310],c=>{c.fillStyle=grad(c,0,679,0,985,[[0,'#344f59'],[.18,'#203c48'],[1,'#0b202f']]);c.fillRect(-120,679,1840,310);c.fillStyle='#8cafaf';c.fillRect(-120,679,1840,3);c.fillStyle='#0d2c3c';c.fillRect(-120,685,1840,7)},1);roadNight.alpha=0;layers.road.addChild(roadDay,roadNight);
+const roadTexture=tex('roadTexture',[0,0,1024,216],c=>{for(let i=0;i<2400;i++){let x=random(0,1024),y=random(0,216);c.fillStyle=i%4===0?'#c6cbaa13':'#0d283514';c.fillRect(x,y,random(.5,4),random(.4,1.4))}for(let i=0;i<6;i++){let y=random(22,208);line(c,[0,y,1024,y+random(-1,1)],'#a2b6a408',1)}c.fillStyle='#ead2a962';c.fillRect(95,153,205,4);c.fillStyle='#eddda13a';c.fillRect(95,157,205,1)},1);
+const roadStrips=[];for(let i=0;i<4;i++){let s=simpleSprite(roadTexture);s.position.set(i*1024,692);layers.road.addChild(s);roadStrips.push(s)}
+const wetRoad=glow(980,773,505,49,'#8dbdc9',0,layers.road);
+const shadowTexture=tex('contactShadow',[-265,-29,530,58],c=>{c.scale(1,.10);c.fillStyle=radial(c,0,0,260,[[0,'#031925b0'],[.6,'#0723306c'],[1,'#071d2c00']]);c.fillRect(-265,-290,530,580)},1.5);
+const shadow=art('contactShadow');shadow.position.set(958,GROUND+3);layers.shadows.addChild(shadow);
+const tireShadowL=glow(958-178,GROUND+1,51,6,'#000000',.68,layers.shadows,'multiply'),tireShadowR=glow(958+178,GROUND+1,51,6,'#000000',.68,layers.shadows,'multiply');
+const roadside=[];
+for(let n=0;n<3;n++){
+ let plant=art('plants'+n,[-30,-160,650,210],c=>{
+  for(let i=0;i<92;i++){let x=random(-20,630),h=random(20,148),bend=random(-49,20);path(c,p=>{p.moveTo(x,29);p.quadraticCurveTo(x+bend*.4,-h*.7,x+bend,-h);p.quadraticCurveTo(x+bend*.2,-h*.4,x+3,29);p.closePath()},i%4===0?'#33534e':'#142f37')}
+  for(let i=0;i<15;i++){let x=random(0,630),h=random(30,100);line(c,[x,25,x+14,-h],'#31524c',1);for(let j=0;j<5;j++)ell(c,x+14+j*2,-h+j*2,2.8,1.6,i%3?'#d39b7378':'#ebc8938f',.3)}
+ },1.5);plant.position.set(n*970-700,884);layers.foreground.addChild(plant);roadside.push(plant)
+}
+// ------------------------------------------------------------ Hand-drawn procedural materials
+function feather(c,x,y,len,w,angle,light='#f8f2db',dark='#a9c5bd'){
+ c.save();c.translate(x,y);c.rotate(angle);
+ path(c,p=>{p.moveTo(0,0);p.bezierCurveTo(len*.26,-w*.91,len*.78,-w*.72,len,0);p.bezierCurveTo(len*.83,w*.55,len*.3,w*.6,0,0);p.closePath()},grad(c,0,-w*.8,0,w*.7,[[0,light],[.62,light],[1,dark]]),'#446f7223',.7);
+ path(c,p=>{p.moveTo(len*.10,-.5);p.quadraticCurveTo(len*.57,-1,len*.87,0)},null,'#fffaf059',.65);c.restore();
+}
+function bodyOutline(c){c.moveTo(-138,-8);c.bezierCurveTo(-133,-63,-69,-90,-16,-80);c.bezierCurveTo(33,-72,63,-41,76,0);c.bezierCurveTo(81,35,41,69,-2,73);c.bezierCurveTo(-64,84,-128,46,-138,-8);c.closePath()}
+tex('birdBody',[-148,-97,235,182],c=>{
+ path(c,bodyOutline,grad(c,-70,-91,20,90,[[0,'#fff8de'],[.25,'#f6edcf'],[.48,'#edeacf'],[.71,'#d7dfc8'],[1,'#77a6a3']]),'#32595d',1.3);
+ c.save();c.beginPath();bodyOutline(c);c.clip();
+ c.fillStyle=radial(c,-70,-50,130,[[0,'#fffdea98'],[.8,'#f9eac500'],[1,'#97b4a933']]);c.fillRect(-148,-97,235,182);
+ for(let row=0;row<5;row++)for(let i=0;i<7;i++){let x=-131+i*26+row*5,y=-30+row*18;feather(c,x,y,random(25,42),random(6,12),-.22+row*.075,['#ece9ce','#e8e6ce','#dee1c8'][row%3],['#cad8c4','#becfc0','#adc8bd'][row%3])}
+ for(let i=0;i<45;i++){let x=random(-117,44),y=random(-62,50);path(c,p=>{p.moveTo(x,y);p.quadraticCurveTo(x+3,y+3,x+7,y+1)},null,'#fffceb43',.8)}
+ c.restore();path(c,p=>{p.moveTo(-128,-30);p.bezierCurveTo(-99,-72,-56,-83,-10,-76)},null,'#fffbd6bf',2.2);
+});
+tex('birdTail',[-132,-42,153,99],c=>{for(let i=0;i<7;i++)feather(c,10,14,-111+i*6,11,-.25+i*.082,i<2?'#f0e9ca':'#c7d5c0','#6c9b9b');},2);
+tex('birdNeck',[-62,-153,189,223],c=>{
+ const shape=p=>{p.moveTo(-48,38);p.bezierCurveTo(2,18,24,-21,30,-55);p.bezierCurveTo(39,-108,62,-136,91,-128);p.bezierCurveTo(125,-124,129,-92,107,-80);p.bezierCurveTo(85,-87,84,-55,78,-20);p.bezierCurveTo(68,39,17,65,-24,62);p.closePath()};
+ path(c,shape,grad(c,-20,-60,89,-25,[[0,'#f8f0d3'],[.44,'#f4efd6'],[.76,'#d5dfce'],[1,'#87b1aa']]),'#456d6c',1.25);
+ path(c,p=>{p.moveTo(-18,30);p.bezierCurveTo(24,1,40,-47,45,-71);p.bezierCurveTo(54,-103,66,-119,85,-119)},null,'#fff9ddcf',5);
+ for(let i=0;i<16;i++){let t=i/16,x=18+36*Math.sin(t*1.6),y=21-t*127;path(c,p=>{p.moveTo(x,y);p.quadraticCurveTo(x+6,y+2,x+10,y-2)},null,'#7a9f992f',.8)}
+},2);
+tex('birdHead',[-51,-71,316,174],c=>{
+ // expanding throat pouch gives the pelican its characteristic silhouette
+ path(c,p=>{p.moveTo(23,11);p.lineTo(238,19);p.bezierCurveTo(221,47,173,71,131,84);p.bezierCurveTo(86,96,45,77,30,48);p.closePath()},grad(c,80,14,95,91,[[0,'#e6ab68'],[.25,'#f6ba73'],[.66,'#dc975c'],[1,'#af7151']]),'#804f39',1.35);
+ c.save();path(c,p=>{p.moveTo(33,31);p.bezierCurveTo(86,44,176,37,235,20);p.bezierCurveTo(182,59,119,79,71,65);p.bezierCurveTo(51,60,37,45,33,31);p.closePath()},'#ffd4905c');
+ for(let i=0;i<18;i++){let x=47+i*7.9;path(c,p=>{p.moveTo(x,29);p.quadraticCurveTo(x-6,53,78+(x-47)*.69,73-Math.pow((x-105)/50,2)*5)},null,'#a8694340',.7)}c.restore();
+ path(c,p=>{p.moveTo(19,-5);p.bezierCurveTo(69,-17,131,-9,244,11);p.quadraticCurveTo(253,16,241,22);p.bezierCurveTo(185,31,107,32,25,17);p.closePath()},grad(c,0,-16,0,37,[[0,'#fff0a6'],[.24,'#ffdd7b'],[.5,'#f7bd59'],[.79,'#e7a145'],[1,'#b3773e']]),'#754d35',1.6);
+ path(c,p=>{p.moveTo(26,-2);p.bezierCurveTo(91,-13,170,4,230,13)},null,'#fff7bcbb',2);
+ path(c,p=>{p.moveTo(35,20);p.bezierCurveTo(124,29,203,26,241,18)},null,'#9d5c30',1.6);ell(c,52,2,3.6,1.4,'#7b523e');
+ path(c,p=>{p.moveTo(-31,21);p.bezierCurveTo(-45,-2,-37,-31,-15,-41);p.bezierCurveTo(5,-52,27,-43,40,-20);p.bezierCurveTo(48,-5,37,8,28,19);p.bezierCurveTo(16,36,-16,42,-31,21);p.closePath()},grad(c,-20,-40,22,37,[[0,'#fff9e0'],[.4,'#f8f0d8'],[1,'#c0d6c7']]),'#496a64',1.3);
+ for(let i=0;i<8;i++){let x=-32+i*6;path(c,p=>{p.moveTo(x,23);p.quadraticCurveTo(x-3,28,x-8,30)},null,'#7fa09950',.8)}
+ // dark leather goggle band, stitched edge
+ path(c,p=>{p.moveTo(-40,-14);p.bezierCurveTo(-16,-13,-3,-7,23,-13)},null,'#544b3b',8);
+ path(c,p=>{p.moveTo(-39,-17);p.bezierCurveTo(-13,-15,-4,-12,15,-15)},null,'#e8c89a',1.1);
+ // aero helmet with vents and inlaid stripes
+ path(c,p=>{p.moveTo(-45,-19);p.bezierCurveTo(-41,-53,-11,-64,17,-52);p.bezierCurveTo(35,-45,40,-30,40,-20);p.bezierCurveTo(11,-29,-7,-26,-45,-19);p.closePath()},grad(c,0,-63,0,-18,[[0,'#f4bd76'],[.30,'#e49359'],[.75,'#ba643e'],[1,'#814634']]),'#644b3b',1.5);
+ path(c,p=>{p.moveTo(-36,-23);p.bezierCurveTo(-30,-49,-8,-59,5,-53);p.bezierCurveTo(-4,-45,-13,-34,-14,-25)},'#ffe4b2');
+ path(c,p=>{p.moveTo(-22,-26);p.bezierCurveTo(-19,-42,-8,-51,-2,-54)},null,'#54736b',3.2);
+ for(let i=0;i<3;i++)path(c,p=>{p.moveTo(8+i*7,-46+i*5);p.quadraticCurveTo(16+i*6,-43+i*5,19+i*6,-37+i*5)},null,'#613e31',3.2);
+ path(c,p=>{p.moveTo(-44,-19);p.bezierCurveTo(-16,-25,15,-29,44,-18)},null,'#f5cb91',3);
+ // goggle frame and lens; eye is a separate blinking layer
+ ell(c,21,-9,22,19,'#3b5754',-.11);ell(c,21,-9,18.7,16.2,'#c4d7be',-.11);ell(c,21,-9,16.2,13.8,grad(c,6,-23,33,7,[[0,'#739e9e'],[.42,'#c0dbc4'],[1,'#f8e9c6']]),-.11);
+ path(c,p=>{p.moveTo(9,-15);p.quadraticCurveTo(15,-25,29,-18)},null,'#fffce0ce',2.1);
+ ell(c,-3,-8,3,3,'#e6c18f');ell(c,-3,-8,1,1,'#6b6651');
+},2.5);
+tex('birdEye',[-10,-12,21,24],c=>{ell(c,0,0,5.8,7.9,'#19363a');ell(c,1,-2.9,2,2.5,'#fffbea');ell(c,-2,4,.9,.9,'#9bdad0')},2.5);
+tex('wing',[-4,-34,293,93],c=>{
+ path(c,p=>{p.moveTo(0,6);p.bezierCurveTo(30,-31,87,-16,130,1);p.bezierCurveTo(176,18,222,48,281,50);p.bezierCurveTo(263,62,231,68,200,60);p.bezierCurveTo(123,62,31,54,0,6);p.closePath()},grad(c,0,-31,0,66,[[0,'#fff5d6'],[.30,'#f3eed4'],[.8,'#c5d9c8'],[1,'#7aa5a1']]),'#497571',1.25);
+ for(let i=0;i<8;i++){let x=72+i*16,y=17+i*3.8;feather(c,x,y,115-i*6,9-i*.43,.14+i*.012,i<3?'#f4f0da':'#e3e7d2','#99bcb4')}
+ for(let i=0;i<6;i++)feather(c,10+i*12,5+i*1.3,55-i*.6,10,.16,'#f6f0d3','#c2d5c2');
+ path(c,p=>{p.moveTo(3,-1);p.bezierCurveTo(37,-24,76,-14,112,-2)},null,'#fffbe3ba',2.2);
+},2);
+tex('limbUpper',[-8,-10,130,23],c=>{path(c,p=>{p.moveTo(0,-7);p.bezierCurveTo(27,-9,89,-4,114,-3);p.quadraticCurveTo(123,0,114,5);p.bezierCurveTo(81,6,25,8,0,8);p.closePath()},grad(c,0,-10,0,11,[[0,'#f5c477'],[.45,'#d99147'],[1,'#925b38']]),'#824e35',.75);line(c,[8,-4,108,-1],'#ffdfa46e',1.3)},2);
+tex('limbLower',[-7,-9,146,22],c=>{path(c,p=>{p.moveTo(0,-5);p.lineTo(128,-3);p.quadraticCurveTo(137,0,130,5);p.lineTo(0,6);p.closePath()},grad(c,0,-8,0,8,[[0,'#f4bd66'],[.5,'#dc9546'],[1,'#92613b']]),'#795236',.8);for(let x=63;x<129;x+=7)line(c,[x,-2,x,3],'#815a384c',.75);line(c,[3,-3,123,-1],'#ffe4ad70',1.1)},2);
+tex('legJoint',[-10,-10,20,20],c=>{ell(c,0,0,6.7,6.4,radial(c,-2,-3,10,[[0,'#ffd78c'],[.5,'#cf914c'],[1,'#8e5738']]));path(c,p=>{p.arc(0,0,5.4,3.6,5.4)},null,'#ffe6a9a1',1)},2);
+tex('webFoot',[-24,-10,68,35],c=>{path(c,p=>{p.moveTo(-13,-3);p.bezierCurveTo(-4,-11,3,-7,8,-2);p.lineTo(35,9);p.quadraticCurveTo(39,14,33,15);p.lineTo(14,11);p.lineTo(23,19);p.quadraticCurveTo(24,23,18,22);p.lineTo(3,16);p.lineTo(3,21);p.quadraticCurveTo(0,24,-5,19);p.lineTo(-21,10);p.quadraticCurveTo(-24,6,-13,-3);p.closePath()},grad(c,0,-8,0,24,[[0,'#ffda88'],[.45,'#efa34c'],[1,'#af6738']]),'#8e5537',1.05);line(c,[-7,1,27,12],'#bb723c',.9);line(c,[-8,3,16,18],'#b87942',.9);line(c,[-10,5,-1,16],'#cb8544',.8);line(c,[-7,-3,9,2,29,10],'#ffe2a688',1.2)},2.5);
+// ------------------------------------------------------------ Seasonal outfit & rarity accessories
+tex('seasonJerseySpring',[-150,-100,235,180],c=>{path(c,p=>{p.moveTo(-125,-8);p.bezierCurveTo(-106,-58,-36,-84,25,-67);p.bezierCurveTo(57,-58,69,-27,60,10);p.bezierCurveTo(48,46,5,67,-45,70);p.bezierCurveTo(-88,72,-124,40,-128,4);p.closePath()},grad(c,-80,-70,45,70,[[0,'#eef8cf'],[.5,'#b7e2aa'],[1,'#62a679']]),'#456c60',1.2);for(let i=0;i<5;i++){let a=i/5*TAU;ell(c,34+Math.cos(a)*5,-18+Math.sin(a)*5,4,3,'#ffd1e2')}ell(c,34,-18,2.5,2.5,'#ffd36c')},2);
+tex('seasonJerseySummer',[-150,-100,235,180],c=>{path(c,p=>{p.moveTo(-125,-8);p.bezierCurveTo(-106,-58,-36,-84,25,-67);p.bezierCurveTo(57,-58,69,-27,60,10);p.bezierCurveTo(48,46,5,67,-45,70);p.bezierCurveTo(-88,72,-124,40,-128,4);p.closePath()},grad(c,-80,-70,45,70,[[0,'#fff0b7'],[.5,'#f3bb65'],[1,'#db7d43']]),'#85543a',1.2);for(let y=-35;y<45;y+=20)line(c,[-105,y,50,y+5],'#3297a0',4)},2);
+tex('seasonJerseyAutumn',[-150,-100,235,180],c=>{path(c,p=>{p.moveTo(-125,-8);p.bezierCurveTo(-106,-58,-36,-84,25,-67);p.bezierCurveTo(57,-58,69,-27,60,10);p.bezierCurveTo(48,46,5,67,-45,70);p.bezierCurveTo(-88,72,-124,40,-128,4);p.closePath()},grad(c,-80,-70,45,70,[[0,'#f5d7a5'],[.45,'#c77a3d'],[1,'#76422d']]),'#623c2b',1.2);path(c,p=>{p.moveTo(30,-30);p.bezierCurveTo(46,-42,60,-26,48,-11);p.bezierCurveTo(37,-5,29,-13,30,-30);p.closePath()},'#efb05e','#7b4422',1)},2);
+tex('seasonJerseyWinter',[-150,-105,235,190],c=>{path(c,p=>{p.moveTo(-130,-5);p.bezierCurveTo(-112,-66,-42,-92,28,-76);p.bezierCurveTo(65,-66,77,-25,66,17);p.bezierCurveTo(54,56,7,76,-50,76);p.bezierCurveTo(-94,76,-131,42,-133,5);p.closePath()},grad(c,-80,-80,50,80,[[0,'#e6f6ff'],[.45,'#abcbe4'],[1,'#668eb4']]),'#486985',1.3);for(let y=-35;y<48;y+=18)line(c,[-105,y,54,y],'#5d83a3',3)},2);
+tex('gearSatchel',[-70,-70,130,140],c=>{path(c,p=>{p.moveTo(-42,-22);p.bezierCurveTo(-28,-48,10,-53,34,-34);p.bezierCurveTo(48,-20,43,23,25,38);p.bezierCurveTo(5,55,-26,49,-43,31);p.closePath()},grad(c,-40,-45,30,40,[[0,'#c99a6d'],[1,'#67412f']]),'#533020',1.2);path(c,p=>{p.moveTo(-31,-10);p.quadraticCurveTo(0,5,25,-12);p.lineTo(30,4);p.quadraticCurveTo(3,20,-31,9);p.closePath()},'#e5c89a','#6e4831',1)},2);
+tex('gearMedal',[-38,-52,76,104],c=>{line(c,[0,-50,0,-19],'#e6d0a0',2);path(c,p=>{for(let i=0;i<10;i++){let a=-Math.PI/2+i*Math.PI/5,r=i%2?12:27;i?p.lineTo(Math.cos(a)*r,Math.sin(a)*r):p.moveTo(Math.cos(a)*r,Math.sin(a)*r)}p.closePath()},grad(c,0,-28,0,28,[[0,'#fff2aa'],[.5,'#e3a340'],[1,'#a45a25']]),'#75421d',1);ell(c,0,0,7,7,'#fff0c0')},2);
+tex('gearCape',[-175,-105,275,180],c=>{path(c,p=>{p.moveTo(-8,-68);p.bezierCurveTo(40,-84,78,-62,82,-30);p.bezierCurveTo(86,3,47,43,-11,54);p.bezierCurveTo(-72,67,-132,39,-166,-8);p.bezierCurveTo(-145,-3,-113,-10,-80,-28);p.bezierCurveTo(-50,-45,-33,-58,-8,-68);p.closePath()},grad(c,-150,-75,70,50,[[0,'#ffd696'],[.35,'#df704d'],[.72,'#8f3d5a'],[1,'#43234b']]),'#5c2c44',1.4);path(c,p=>{p.moveTo(-5,-58);p.bezierCurveTo(30,-66,58,-52,72,-33)},null,'#fff0ca99',2.5)},2);
+tex('gearBanner',[-90,-85,180,150],c=>{line(c,[-52,-65,-52,48],'#d9dec2',3);path(c,p=>{p.moveTo(-48,-56);p.lineTo(38,-42);p.lineTo(8,-15);p.lineTo(35,11);p.lineTo(-48,4);p.closePath()},grad(c,-45,-55,34,10,[[0,'#c8f2e7'],[.5,'#55b9b3'],[1,'#2c7285']]),'#296775',1.2)},2);
+tex('gearCrown',[-55,-45,110,80],c=>{path(c,p=>{p.moveTo(-38,21);p.lineTo(-26,-9);p.lineTo(-8,7);p.lineTo(0,-23);p.lineTo(10,7);p.lineTo(27,-9);p.lineTo(39,21);p.closePath()},grad(c,0,-24,0,24,[[0,'#fffbd0'],[.45,'#f1cc5b'],[1,'#b97b27']]),'#86531b',1.1);ell(c,0,-2,5,7,'#bfeaff')},2);
+// ------------------------------------------------------------ Bicycle construction
+tex('wheelRim',[-100,-100,200,200],c=>{
+ ell(c,2,3,95.5,95.5,'#102e3799');
+ c.beginPath();c.arc(0,0,RADIUS-4,0,TAU);c.strokeStyle='#152e35';c.lineWidth=14;c.stroke();
+ c.beginPath();c.arc(0,0,RADIUS-2.4,0,TAU);c.strokeStyle='#78958a';c.lineWidth=1.4;c.stroke();
+ c.beginPath();c.arc(0,0,RADIUS-7,0,TAU);c.strokeStyle=grad(c,-100,-100,100,100,[[0,'#fff0be'],[.25,'#d0c8a1'],[.7,'#acb798'],[1,'#6b8d88']]);c.lineWidth=5;c.stroke();
+ c.beginPath();c.arc(0,0,RADIUS-12,0,TAU);c.strokeStyle='#668e90';c.lineWidth=3.6;c.stroke();
+ c.beginPath();c.arc(0,0,RADIUS-13.6,0,TAU);c.strokeStyle='#b5ece0';c.lineWidth=.9;c.stroke();
+ c.beginPath();c.arc(-.5,-.5,RADIUS-1.5,Math.PI,Math.PI*1.84);c.strokeStyle='#bdd6bc66';c.lineWidth=1.5;c.stroke();
+},2.2);
+tex('wheelSpokes',[-91,-91,182,182],c=>{
+ for(let i=0;i<28;i++){let a=i/28*TAU;let a0=a+(i%2?.15:-.15);line(c,[Math.cos(a0)*9,Math.sin(a0)*9,Math.cos(a)*78,Math.sin(a)*78],i%2?'#c6dace82':'#678e917d',.85)}
+ c.strokeStyle='#ade8d755';c.lineWidth=2;for(let i=0;i<3;i++){c.beginPath();c.arc(0,0,79.4,i*TAU/3,i*TAU/3+.56);c.stroke()}
+ line(c,[0,-79,0,-73],'#dbe9cd',2.3);c.fillStyle='#e6e4c8';c.font='600 5.7px sans-serif';c.textAlign='center';c.save();c.translate(0,87);c.rotate(Math.PI);c.fillText('C O A S T   /   7 0 0 C',0,0);c.restore();
+ ell(c,0,0,11,11,grad(c,0,-12,0,12,[[0,'#e3d9b5'],[.5,'#8ca8a0'],[1,'#355e68']]));ell(c,0,0,5.5,5.5,'#153f4c');ell(c,-1,-1,2.5,2.5,'#e8e4c4');
+},2.2);
+tex('bikeFrame',[-213,-333,443,288],c=>{
+ const tubes=[[-178,-91,-108,-256],[-178,-91,-27,-106],[-108,-256,-27,-106],[-108,-256,99,-251],[99,-251,-27,-106],[99,-251,178,-91]];
+ for(const [x,y,a,b]of tubes){line(c,[x+1,y+3,a+1,b+3],'#132f3894',16);line(c,[x,y,a,b],'#164c58',13);line(c,[x,y,a,b],grad(c,x,y-8,x+12,y+7,[[0,'#c2e4c9'],[.25,'#82cfc0'],[.53,'#3b9d99'],[1,'#226470']]),9);line(c,[x-1,y-2,a-1,b-2],'#cef0ca8f',1.4)}
+ // front fork crown and double curved fork
+ path(c,p=>{p.moveTo(116,-217);p.bezierCurveTo(130,-158,164,-127,178,-91)},null,'#163c49',10);
+ path(c,p=>{p.moveTo(116,-217);p.bezierCurveTo(130,-158,164,-127,178,-91)},null,'#95caba',5.5);
+ path(c,p=>{p.moveTo(108,-213);p.bezierCurveTo(115,-161,149,-120,176,-91)},null,'#4c9d9c',3);
+ line(c,[-108,-257,-121,-290],'#203e46',8);line(c,[-109,-258,-121,-290],'#d5d9bd',3);
+ // leather saddle
+ path(c,p=>{p.moveTo(-159,-288);p.bezierCurveTo(-145,-301,-109,-297,-76,-291);p.quadraticCurveTo(-65,-286,-79,-281);p.bezierCurveTo(-101,-275,-115,-280,-131,-282);p.quadraticCurveTo(-158,-278,-159,-288)},grad(c,0,-299,0,-280,[[0,'#986d49'],[.36,'#714e39'],[1,'#253d3e']]),'#283c3c',1.4);
+ path(c,p=>{p.moveTo(-150,-290);p.bezierCurveTo(-124,-290,-100,-284,-80,-286)},null,'#dfbb82',1.2);
+ for(let i=0;i<5;i++)ell(c,-148+i*4,-286,1.1,1.1,'#ccb58a');
+ // steering stem and drops
+ line(c,[99,-249,95,-280,116,-298],'#264d54',8);line(c,[99,-249,95,-279,116,-297],'#c8d8be',4);
+ path(c,p=>{p.moveTo(111,-298);p.bezierCurveTo(128,-307,156,-306,177,-294);p.bezierCurveTo(193,-283,179,-268,165,-270)},null,'#163f4b',10);
+ path(c,p=>{p.moveTo(111,-298);p.bezierCurveTo(128,-307,156,-306,174,-296)},null,'#d2ddbf',3.3);
+ path(c,p=>{p.moveTo(154,-301);p.bezierCurveTo(178,-299,191,-282,167,-274)},null,'#294c51',7);
+ for(let i=0;i<6;i++)line(c,[163+i*2,-299+i*1.5,159+i*2,-294+i*1.5],'#759487',1);
+ // brake cable
+ path(c,p=>{p.moveTo(168,-289);p.bezierCurveTo(208,-252,149,-225,124,-205)},null,'#1e3b437e',1.3);
+ // front headlight & gold bell
+ ell(c,135,-308,10,5.5,grad(c,0,-315,0,-302,[[0,'#ffe6a2'],[.4,'#d7b374'],[1,'#7a6849']]));line(c,[140,-310,145,-315],'#dfc79b',2);
+ path(c,p=>{p.moveTo(122,-278);p.lineTo(143,-281);p.quadraticCurveTo(152,-275,143,-265);p.lineTo(123,-265);p.closePath()},'#163e49','#799e94',1);ell(c,146,-273,4,7.2,'#ffedb7');
+ // rear rack and compact travel roll
+ line(c,[-178,-91,-192,-243,-127,-243],'#9db7a5',2.3);line(c,[-215,-245,-136,-245],'#163e49',5);
+ c.fillStyle=grad(c,0,-281,0,-246,[[0,'#d6ae74'],[.5,'#bb824e'],[1,'#73543c']]);c.beginPath();c.roundRect(-215,-282,67,35,12);c.fill();ell(c,-209,-264,7,16,'#8c613d');ell(c,-209,-264,4.5,11,'#b28a57');
+ for(let x=-189;x<-155;x+=23){c.fillStyle='#385750';c.fillRect(x,-282,5,34);c.fillStyle='#dec18b';c.fillRect(x-1,-262,7,7);c.fillStyle='#536d59';c.fillRect(x+1,-260,3,3)}
+ // bidon and cage
+ c.save();c.translate(21,-170);c.rotate(.48);c.fillStyle='#284c50';c.fillRect(-10,-24,20,48);c.fillStyle=grad(c,-10,0,10,0,[[0,'#c4d3b4'],[.35,'#f2e0b3'],[1,'#94b5a5']]);c.beginPath();c.roundRect(-8,-31,17,47,4);c.fill();c.fillStyle='#d78952';c.fillRect(-8,-17,17,12);c.fillStyle='#214b51';c.fillRect(-6,-36,13,7);line(c,[-11,-8,-11,20,12,20,12,-5],'#649a94',2);c.restore();
+ // label follows the downtube
+ c.save();c.translate(46,-198);c.rotate(-.78);c.fillStyle='#ecedca';c.font='600 10px sans-serif';c.textAlign='center';c.fillText('P E L I C A N',0,0);c.restore();
+ for(const[x,y]of[[-178,-91],[178,-91],[-27,-106],[-108,-256],[99,-251]]){ell(c,x,y,4.1,4.1,'#d6d7b9');ell(c,x+.2,y+.2,1.8,1.8,'#365961')}
+},2.2);
+tex('chainring',[-39,-39,78,78],c=>{
+ path(c,p=>{for(let i=0;i<72;i++){let a=i/72*TAU,r=i%2?31.5:35.2;let x=Math.cos(a)*r,y=Math.sin(a)*r;i?p.lineTo(x,y):p.moveTo(x,y)}p.closePath()},grad(c,-35,-35,35,35,[[0,'#e9dfbd'],[.34,'#9bb9b0'],[.60,'#496d76'],[1,'#c4cdac']]),'#243f47',1);
+ ell(c,0,0,26.8,26.8,'#294f5c');for(let i=0;i<5;i++){let a=i/5*TAU;c.save();c.rotate(a);path(c,p=>{p.moveTo(0,3);p.lineTo(23,5);p.lineTo(22,-5);p.lineTo(0,-2);p.closePath()},'#95b4ad');c.restore()}
+ c.beginPath();c.arc(0,0,29,0,TAU);c.strokeStyle='#d2d9b3';c.lineWidth=1;c.stroke();ell(c,0,0,9,9,'#163d49');ell(c,-1,-1,3.6,3.6,'#e4e2bb');
+},2.3);
+tex('rearCog',[-18,-18,36,36],c=>{path(c,p=>{for(let i=0;i<28;i++){let a=i/28*TAU,r=i%2?11.7:14.2;i?p.lineTo(Math.cos(a)*r,Math.sin(a)*r):p.moveTo(Math.cos(a)*r,Math.sin(a)*r)}p.closePath()},'#b1bc9e','#254953',1);ell(c,0,0,7.5,7.5,'#335763');ell(c,0,0,3,3,'#cbd5b3')},2);
+tex('crankArm',[-9,-10,53,21],c=>{path(c,p=>{p.moveTo(-3,-6);p.lineTo(33,-3);p.quadraticCurveTo(40,0,33,5);p.lineTo(-3,7);p.quadraticCurveTo(-11,0,-3,-6);p.closePath()},grad(c,0,-7,0,8,[[0,'#f6e8bc'],[.4,'#c9cfb2'],[1,'#597c80']]),'#2d5058',1);ell(c,0,0,3.7,3.7,'#365c61')},2);
+tex('pedal',[-21,-5,42,12],c=>{c.fillStyle='#143842';c.beginPath();c.roundRect(-20,-4,40,9,3);c.fill();line(c,[-16,-2,16,-2],'#bfccaa',1.3);c.fillStyle='#e4ba72';c.fillRect(-17,-1,8,4);for(let i=-6;i<18;i+=6)line(c,[i,-3,i,3],'#708e86',1)},2);
+const chainLinkTex=tex('chainLink',[-3,-1.4,6,2.8],c=>{c.fillStyle='#d5d6b3';c.beginPath();c.roundRect(-3,-1,6,2,1);c.fill();ell(c,-1.8,0,.55,.55,'#43646a');ell(c,1.8,0,.55,.55,'#43646a')},2);
+const chainPts=[];
+// A sampled closed chain loop: two sprocket arcs plus their upper/lower tangents.
+for(let i=0;i<=22;i++){let a=-Math.PI*.53+i/22*Math.PI*1.06;chainPts.push({x:-27+Math.cos(a)*35,y:-106+Math.sin(a)*35})}
+chainPts.push({x:-178,y:-91+35/GEAR});for(let i=0;i<=15;i++){let a=Math.PI*.5+i/15*Math.PI;chainPts.push({x:-178+Math.cos(a)*35/GEAR,y:-91+Math.sin(a)*35/GEAR})}chainPts.push({x:-27+Math.cos(-Math.PI*.53)*35,y:-106+Math.sin(-Math.PI*.53)*35});
+const chainDistances=[0];for(let i=1;i<chainPts.length;i++)chainDistances[i]=chainDistances[i-1]+Math.hypot(chainPts[i].x-chainPts[i-1].x,chainPts[i].y-chainPts[i-1].y);const chainLength=chainDistances.at(-1);
+function chainPoint(v){v=mod(v,chainLength);let i=1;while(i<chainDistances.length-1&&chainDistances[i]<v)i++;let a=chainPts[i-1],b=chainPts[i],t=(v-chainDistances[i-1])/(chainDistances[i]-chainDistances[i-1]);return{x:lerp(a.x,b.x,t),y:lerp(a.y,b.y,t),angle:Math.atan2(b.y-a.y,b.x-a.x)}}
+function limb(parent,isBack){const group=new Container,upper=art('limbUpper'),lower=art('limbLower'),joint=art('legJoint'),foot=art('webFoot'),pedal=art('pedal');group.addChild(upper,lower,joint,pedal,foot);if(isBack)group.alpha=.7;parent.addChild(group);return{group,upper,lower,joint,foot,pedal}}
+function createRig(){
+ const r=new Container();
+ const wheelGroups=[],spokes=[];
+ for(const x of[-178,178]){let w=new Container;w.position.set(x,-91);const sp=art('wheelSpokes'),rim=art('wheelRim');w.addChild(sp,rim);r.addChild(w);wheelGroups.push(w);spokes.push(sp)}
+ const cog=art('rearCog');cog.position.set(-178,-91);r.addChild(cog);
+ const chainBack=new Graphics;chainBack.moveTo(chainPts[0].x,chainPts[0].y);chainPts.slice(1).forEach(p=>chainBack.lineTo(p.x,p.y));chainBack.stroke({color:0x1c3c45,width:4});r.addChild(chainBack);
+ const links=[];for(let i=0;i<57;i++){const l=simpleSprite(chainLinkTex);l.anchor.set(.5);r.addChild(l);links.push(l)}
+ const backLeg=limb(r,true);const rearArm=art('crankArm');rearArm.position.set(-27,-106);rearArm.alpha=.7;r.addChild(rearArm);
+ const frame=art('bikeFrame');r.addChild(frame);
+ const chainring=art('chainring');chainring.position.set(-27,-106);r.addChild(chainring);
+ const frontArm=art('crankArm');frontArm.position.set(-27,-106);r.addChild(frontArm);
+ const frontLeg=limb(r,false);
+ const bird=new Container;r.addChild(bird);
+ const tail=art('birdTail');tail.position.set(-233,-347);bird.addChild(tail);
+ const scarf=new Graphics;bird.addChild(scarf);
+ const cape=art('gearCape');cape.position.set(-163,-370);cape.visible=false;bird.addChild(cape);
+ const banner=art('gearBanner');banner.position.set(-208,-332);banner.visible=false;bird.addChild(banner);
+ const neck=art('birdNeck');neck.position.set(-66,-363);bird.addChild(neck);
+ const body=art('birdBody');body.position.set(-130,-350);bird.addChild(body);
+ const jerseyGroup=new Container;jerseyGroup.position.set(-126,-352);bird.addChild(jerseyGroup);const jerseys=[art('seasonJerseySpring'),art('seasonJerseySummer'),art('seasonJerseyAutumn'),art('seasonJerseyWinter')];jerseys.forEach(j=>{j.visible=false;jerseyGroup.addChild(j)});
+ const head=new Container;head.position.set(31,-480);const headArt=art('birdHead');head.addChild(headArt);const eye=art('birdEye');eye.position.set(24,-8);head.addChild(eye);const crown=art('gearCrown');crown.position.set(6,-48);crown.visible=false;head.addChild(crown);bird.addChild(head);
+ const satchel=art('gearSatchel');satchel.position.set(-136,-310);satchel.visible=false;bird.addChild(satchel);
+ const collar=art('collar',[-29,-22,74,43],c=>{path(c,p=>{p.moveTo(-26,-6);p.quadraticCurveTo(11,9,35,-15);p.lineTo(43,0);p.quadraticCurveTo(10,21,-23,11);p.closePath()},grad(c,0,-15,0,21,[[0,'#fa9b70'],[.35,'#df7553'],[1,'#a84c3c']]),'#914e3b',1);path(c,p=>{p.moveTo(-23,-1);p.quadraticCurveTo(9,16,39,-7)},null,'#ffc3a46b',2);ell(c,-26,1,10,11,'#d76e4d');path(c,p=>{p.moveTo(-33,-4);p.quadraticCurveTo(-31,7,-23,10)},null,'#efab7780',1)},2);collar.position.set(-26,-430);bird.addChild(collar);
+ const medal=art('gearMedal');medal.position.set(-4,-407);medal.visible=false;bird.addChild(medal);
+ const wing=art('wing');wing.position.set(-145,-368);bird.addChild(wing);
+ const rarityFx=new Graphics;r.addChild(rarityFx);
+ const lamp=glow(149,-273,19,17,'#ffe7ad',.15,r);const rearLamp=glow(-210,-248,10,7,'#ff9970',.4,r);
+ const wingTips=new Graphics;r.addChild(wingTips);
+ return{r,wheelGroups,spokes,cog,links,backLeg,frontLeg,rearArm,frontArm,chainring,bird,tail,neck,body,head,eye,collar,wing,scarf,lamp,rearLamp,wingTips,jerseys,satchel,medal,cape,banner,crown,rarityFx};
+}
+const rig=createRig();layers.rider.addChild(rig.r);
+const reflectedRig=createRig();layers.reflection.addChild(reflectedRig.r);reflectedRig.r.alpha=.10;reflectedRig.r.scale.set(1,-.27);
+const lampBeam=art('lampBeam',[0,-60,600,260],c=>{path(c,p=>{p.moveTo(0,0);p.lineTo(570,143);p.quadraticCurveTo(542,200,492,194);p.lineTo(0,7);p.closePath()},grad(c,0,0,580,20,[[0,'#fff0be2e'],[.40,'#fff0b512'],[1,'#fff0b500']]));},1);layers.dustBack.addChild(lampBeam);
+const lightPool=glow(1340,744,226,21,'#ffe7ad',.1,layers.shadows);
+// ------------------------------------------------------------ Cloth / two-bone leg solver
+const scarfNodes=Array.from({length:23},(_,i)=>({x:-54-i*9.4,y:-429+Math.sin(i*.45)*7,px:-54-i*9.4,py:-429+Math.sin(i*.45)*7}));
+let clothAccumulator=0;
+function clothStep(dt){
+ const h=1/120;clothAccumulator+=dt;
+ let steps=0;while(clothAccumulator>=h&&steps++<12){
+  const anchor={x:-53+state.boost*3,y:-430};
+  for(let i=1;i<scarfNodes.length;i++){const p=scarfNodes[i];let vx=(p.x-p.px)*.972,vy=(p.y-p.py)*.974;p.px=p.x;p.py=p.y;p.x+=vx+(-1300-state.speed*29-state.boost*2700)*h*h;p.y+=vy+(170+Math.sin(state.time*7.8-i*.57)*930+Math.sin(state.time*3.1-i*.27)*270)*h*h}
+  for(let j=0;j<6;j++){scarfNodes[0].x=anchor.x;scarfNodes[0].y=anchor.y;for(let i=1;i<scarfNodes.length;i++){let a=scarfNodes[i-1],b=scarfNodes[i],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1,diff=(d-9.4)/d;if(i===1){b.x-=dx*diff;b.y-=dy*diff}else{a.x+=dx*diff*.5;a.y+=dy*diff*.5;b.x-=dx*diff*.5;b.y-=dy*diff*.5}}}
+  clothAccumulator-=h;
+ }
+}
+function drawScarf(g){g.clear();const sp=SEASON_PALETTES[seasonIndex()];
+ for(let tail=1;tail>=0;tail--){let top=[],bottom=[],pts=[];
+  for(let i=0;i<scarfNodes.length;i++){const n=scarfNodes[i],p=scarfNodes[Math.max(0,i-1)],q=scarfNodes[Math.min(scarfNodes.length-1,i+1)];let dx=q.x-p.x,dy=q.y-p.y,d=Math.hypot(dx,dy)||1;let width=tail?5.4:8.8-i*.16;let f=tail?.78:1;let x=-53+(n.x+53)*f,y=n.y+(tail?13+Math.sin(i*.4+state.time*4)*3:0);let nx=-dy/d*width,ny=dx/d*width;top.push(x+nx,y+ny);bottom.unshift(x-nx,y-ny);pts.push({x,y,ny,nx})}
+  g.poly([...top,...bottom]).fill(tail?(sp.main&0xffffff):sp.accent);
+  g.moveTo(top[0],top[1]);for(let i=2;i<top.length;i+=2)g.lineTo(top[i],top[i+1]);g.stroke({color:tail?sp.accent:0xfff0cf,width:tail?1:1.7,alpha:.85});
+  for(let i of[18,20]){let a=pts[i],b=pts[i+1];g.poly([a.x+a.nx,a.y+a.ny,b.x+b.nx,b.y+b.ny,b.x-b.nx,b.y-b.ny,a.x-a.nx,a.y-a.ny]).fill({color:0xffe2b3,alpha:.74})}
+ }
+}
+function placeLeg(l,phase,back){
+ const foot={x:-27+Math.cos(phase)*35,y:-106+Math.sin(phase)*35},hip={x:-104+(back?-10:0)-state.boost*3,y:-285+Math.sin(state.crank*2)*1.35};
+ let dx=foot.x-hip.x,dy=foot.y-hip.y,d=clamp(Math.hypot(dx,dy),3,242.7),a=112,b=131;
+ let angle=Math.atan2(dy,dx)-Math.acos(clamp((a*a+d*d-b*b)/(2*a*d),-1,1));
+ const knee={x:hip.x+Math.cos(angle)*a,y:hip.y+Math.sin(angle)*a};
+ l.upper.position.set(hip.x,hip.y);l.upper.rotation=angle;l.upper.scale.x=a/116;
+ l.lower.position.set(knee.x,knee.y);l.lower.rotation=Math.atan2(foot.y-knee.y,foot.x-knee.x);l.lower.scale.x=Math.hypot(foot.x-knee.x,foot.y-knee.y)/132;
+ l.joint.position.set(knee.x,knee.y);l.pedal.position.set(foot.x,foot.y+5);l.foot.position.set(foot.x-3,foot.y-3);l.foot.rotation=.035*Math.sin(phase);
+}
+function poseRider(a){
+ a.spokes.forEach(s=>{s.rotation=state.wheel;s.alpha=.85-state.boost*.23});a.cog.rotation=state.wheel;
+ a.chainring.rotation=state.crank;a.frontArm.rotation=state.crank;a.rearArm.rotation=state.crank+Math.PI;
+ a.links.forEach((s,i)=>{let p=chainPoint(i*chainLength/a.links.length+state.crank*35);s.position.set(p.x,p.y);s.rotation=p.angle});
+ placeLeg(a.backLeg,state.crank+Math.PI,true);placeLeg(a.frontLeg,state.crank,false);
+ let bob=Math.sin(state.crank*2)*1.35+Math.sin(state.time*1.7)*.65;
+ a.bird.y=bob-state.boost*1.5;a.body.rotation=.009*Math.sin(state.crank*2);
+ a.neck.rotation=.055*state.boost+Math.sin(state.time*1.5)*.006;
+ a.head.position.set(31+state.boost*7, -480+bob*.2+state.boost*3);a.head.rotation=.015*Math.sin(state.time*1.55)+.035*state.boost-Math.sin(state.bell*Math.PI)*.035;
+ a.eye.x=24+state.mouseX*1.4;a.eye.y=-8+state.mouseY*.7;
+ const blinkPhase=mod(state.time,5.3),blink=1-.97*Math.exp(-Math.pow((blinkPhase-.18)/.055,2));a.eye.scale.y=Math.max(.04,blink*(1-.20*state.boost));
+ a.tail.rotation=Math.sin(state.time*7)*.035+state.boost*.03;
+ let air=state.jumpT>=0?Math.sin(Math.PI*clamp((state.jumpT-.14)/.88)):0;
+ a.wing.position.set(-143,-353-bob*.45);a.wing.rotation=.08-.14*air+Math.sin(state.time*1.7)*.002;a.wing.scale.set(1.12,1);
+ const season=seasonIndex(),tier=tierIndex();a.jerseys.forEach((j,i)=>j.visible=i===season);a.collar.tint=SEASON_PALETTES[season].main;
+ a.satchel.visible=tier>=1;a.medal.visible=tier>=2;a.banner.visible=tier>=2;a.cape.visible=tier>=3;a.crown.visible=tier>=4;
+ if(a.satchel.visible){a.satchel.rotation=-.08+Math.sin(state.time*2.4)*.05}if(a.medal.visible){a.medal.rotation=Math.sin(state.time*4.3)*.1}if(a.banner.visible){a.banner.rotation=-.12+Math.sin(state.time*3.2)*.07}if(a.cape.visible){a.cape.rotation=-.18-state.boost*.04+Math.sin(state.time*2)*.025}if(a.crown.visible){a.crown.rotation=Math.sin(state.time*2.2)*.03}
+ a.rarityFx.clear();const pulse=.5+.5*Math.sin(state.time*4.2);if(tier>=3){a.rarityFx.circle(-178,-91,99+pulse*4).stroke({color:tier===4?0xdffff5:0xffd696,width:1.2,alpha:.16});a.rarityFx.circle(178,-91,99+pulse*4).stroke({color:tier===4?0xdffff5:0xffd696,width:1.2,alpha:.16})}if(tier>=4){a.rarityFx.ellipse(31,-521,27,8).stroke({color:0xf5ffd2,width:1.5,alpha:.7});for(let i=0;i<7;i++){let f=i/6,x=-84-f*80-state.boost*20+Math.sin(state.time*4+i)*3,y=-350+Math.sin(state.time*3+i)*9;a.rarityFx.circle(x,y,2.4-f*.15).fill({color:i%2?0xdffff5:0xfff0a8,alpha:.48-f*.035})}}
+ a.lamp.alpha=.18+.8*state.night+state.rain*.1;a.rearLamp.alpha=.35+.25*state.night;drawScarf(a.scarf);
+}
+// ------------------------------------------------------------ Particles, rain, airborne highlights
+const dustTex=tex('dust',[-8,-8,16,16],c=>{c.fillStyle=radial(c,0,0,8,[[0,'#fff4c7db'],[.25,'#dddaaf67'],[1,'#cfd9b400']]);c.fillRect(-8,-8,16,16)},1.5);
+const sparkTex=tex('spark',[-9,-9,18,18],c=>{c.fillStyle=radial(c,0,0,9,[[0,'#fff9dc'],[.22,'#ebfddba0'],[1,'#bdffe600']]);c.fillRect(-9,-9,18,18);line(c,[-4,0,4,0],'#fffbe7a0',.7);line(c,[0,-4,0,4],'#eaffeaa0',.7)},1.5);
+const particlePool=[];for(let i=0;i<120;i++){let s=new Sprite(i%4?sparkTex.texture:dustTex.texture);s.anchor.set(.5);s.visible=false;s.blendMode=i%4?'screen':'normal';(i%3?layers.particles:layers.dustBack).addChild(s);particlePool.push({s,life:0,max:1,x:0,y:0,vx:0,vy:0,scale:1,rot:0,type:0})}
+let poolIndex=0,dustAccum=0;
+function emitParticle(x,y,vx,vy,life,scale,type=0){const p=particlePool[poolIndex++%particlePool.length];Object.assign(p,{x,y,vx,vy,life,max:life,scale,rot:random(-1,1),type});p.s.visible=true;p.s.alpha=.6;return p}
+const floaters=[];for(let i=0;i<35;i++){const s=new Sprite(sparkTex.texture);s.anchor.set(.5);s.position.set(random(0,W),random(270,785));s.scale.set(random(.07,.30));s.alpha=random(.13,.48);s.blendMode='screen';layers.particles.addChild(s);floaters.push({s,x:s.x,y:s.y,phase:rand()*TAU,speed:random(8,45)})}
+const speedLines=new Graphics();layers.particles.addChild(speedLines);
+const bellRings=new Graphics();layers.particles.addChild(bellRings);
+const rainTex=tex('rainDrop',[-1,0,2,34],c=>{c.fillStyle=grad(c,0,0,0,34,[[0,'#cfebf800'],[.8,'#e1f4f595'],[1,'#fffce49a']]);c.fillRect(-.6,0,1.2,34)},1.5);
+const raindrops=[];for(let i=0;i<165;i++){const s=new Sprite(rainTex.texture);s.position.set(random(-150,W+200),random(-H,H));s.scale.set(random(.35,.85),random(.27,.9));s.rotation=.29;s.alpha=random(.15,.65);layers.rain.addChild(s);raindrops.push({s,x:s.x,y:s.y,speed:random(710,1390)})}
+const splashes=new Graphics();layers.rain.addChild(splashes);
+const splashData=Array.from({length:24},()=>({x:random(0,W),y:random(704,863),p:rand(),speed:random(.7,1.7)}));
+const nightGrade=new Graphics().rect(-100,-80,1800,1080).fill({color:0x102d50,alpha:.25});nightGrade.alpha=0;layers.grade.addChild(nightGrade);
+const vignette=art('vignette',[-100,-80,1800,1080],c=>{const g=c.createRadialGradient(820,400,210,800,425,1060);g.addColorStop(0,'#041d2800');g.addColorStop(.58,'#051d2700');g.addColorStop(1,'#04172786');c.fillStyle=g;c.fillRect(-100,-80,1800,1080)},.75);layers.grade.addChild(vignette);const seasonGrade=new Graphics();layers.grade.addChild(seasonGrade);const seasonWeather=new Graphics();layers.particles.addChild(seasonWeather);const seasonDots=Array.from({length:80},()=>({x:random(0,W),y:random(80,H),p:rand()*TAU,s:random(.5,1.5)}));
+// ------------------------------------------------------------ Sound: only starts after a deliberate click
+let audio=null;
+function audioInit(){if(audio)return audio;const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;const ctx=new C();const master=ctx.createGain();master.gain.value=0;master.connect(ctx.destination);const buffer=ctx.createBuffer(1,ctx.sampleRate*4,ctx.sampleRate);let data=buffer.getChannelData(0),prev=0;for(let i=0;i<data.length;i++){const w=Math.random()*2-1;prev=(prev+.02*w)/1.02;data[i]=prev*3.5}const wind=ctx.createBufferSource();wind.buffer=buffer;wind.loop=true;const filter=ctx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=850;const gain=ctx.createGain();gain.gain.value=.32;wind.connect(filter);filter.connect(gain);gain.connect(master);wind.start();audio={ctx,master,filter,gain};return audio}
+function playBell(){if(!state.sound||!audio)return;let t=audio.ctx.currentTime;for(const f of[1396.91,2093.0,2793.8]){const osc=audio.ctx.createOscillator(),g=audio.ctx.createGain();osc.type='sine';osc.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(f===1396.91?.4:.11,t+.007);g.gain.exponentialRampToValueAtTime(.0001,t+1.4);osc.connect(g);g.connect(audio.master);osc.start(t);osc.stop(t+1.5)}}
+function bell(){state.bell=1;playBell();toast(state.sound?'叮铃。借过一小阵海风。':'叮铃。开启音效可以听见车铃。')}
+function toast(text){$('toast').textContent=text;$('toast').classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('toast').classList.remove('show'),2300)}
+// ------------------------------------------------------------ Input and UI
+$('speedBars').innerHTML=Array.from({length:30},()=>'<i></i>').join('');const bars=[...$('speedBars').children];
+function updateCopy(){const sn=seasonIndex(),night=!!state.targetNight;const labels=['春日花岸','盛夏海岸','秋风海岸','冬雪海岸'];$('sceneLabel').textContent=(night?SEASON_NAMES[sn]+'夜航线':labels[sn])+' · '+(night?'AFTER HOURS':'GOLDEN HOUR');$('title').innerHTML=[['花开一路，<br>沿海而行。','夏日正盛，<br>追一追风。','秋风经过，<br>继续向前。','雪落海岸，<br>仍然出发。'],['春夜微凉，<br>慢慢前行。','月亮升起，<br>旅途继续。','秋夜有风，<br>灯塔作伴。','雪夜发亮，<br>一路有光。']][night?1:0][sn];$('rarityBadge').textContent=TIER_NAMES[tierIndex()]+' · '+SEASON_NAMES[sn]+'装';$('subtitle').innerHTML=['花瓣跟着海风穿过车轮。<br>颜色更轻，路也显得更长。','海面发亮，空气里都是盛夏的热度。<br>适合加速，也适合一直骑。','落叶会追着车尾打转。<br>风更明显，颜色也更暖。','雪花从镜头前慢慢落下。<br>海岸更冷，但灯光更亮。'][sn]}
+function setTheme(n){n=Number(!!n);state.targetNight=n;$('sunset').classList.toggle('active',!n);$('night').classList.toggle('active',!!n);$('sunset').setAttribute('aria-pressed',!n);$('night').setAttribute('aria-pressed',!!n);updateCopy()}
+function setSeason(n,silent=false){state.season=Math.max(0,Math.min(3,Number(n)||0));['spring','summer','autumn','winter'].forEach((id,i)=>$(id).classList.toggle('active',i===state.season));updateCopy();if(!silent){const f=$('seasonFlash');f.style.background=['#ffd7e855','#ffe69a44','#df874455','#d9f2ff55'][state.season];f.className='play';setTimeout(()=>f.className='',900);toast('切换到'+SEASON_NAMES[state.season]+'季节')}}
+function cycleOutfit(){state.outfitTier=(tierIndex()+1)%5;$('outfit').textContent='装扮：'+TIER_NAMES[state.outfitTier];updateCopy();toast(TIER_NAMES[state.outfitTier]+' · '+TIER_DESC[state.outfitTier])}
+function toggleControls(){document.body.classList.toggle('show-advanced');toast(document.body.classList.contains('show-advanced')?'扩展按钮已显示':'扩展按钮已隐藏')}
+function speedNudge(d){state.targetSpeed=clamp(state.targetSpeed+d,8,42);$('speed').value=state.targetSpeed;$('speedValue').textContent=Math.round(state.targetSpeed)}
+async function soundToggle(){try{const a=audioInit();if(!a)return;await a.ctx.resume();state.sound=!state.sound;$('sound').textContent=state.sound?'音效：开':'音效：关';a.master.gain.setTargetAtTime(state.sound&&!state.paused?.22:0,a.ctx.currentTime,.4);if(state.sound)playBell()}catch(e){toast('音效暂时无法启动。')}}
+function setRain(){state.targetRain=1-state.targetRain;$('rain').classList.toggle('active',!!state.targetRain);$('rain').setAttribute('aria-pressed',!!state.targetRain);toast(state.targetRain?'海岸阵雨 · 路面反光已开启':'雨停了，继续吹吹海风。')}
+function pauseToggle(){state.paused=!state.paused;document.body.classList.toggle('paused',state.paused);$('pause').textContent=state.paused?'继续':'暂停';$('pause').setAttribute('aria-pressed',state.paused);if(audio)audio.master.gain.setTargetAtTime(state.sound&&!state.paused?.22:0,audio.ctx.currentTime,.3)}
+function jump(){if(state.paused||state.jumpT>=0)return;state.jumpT=0;toast('轻轻一跃。')}
+function boost(on){state.boostHeld=on;$('boost').classList.toggle('pressed',on)}
+function cameraToggle(){state.camera=(state.camera+1)%3;$('camera').textContent=['镜头：全景','镜头：跟拍','镜头：特写'][state.camera];document.body.classList.toggle('close-camera',state.camera>0);toast(['海岸全景 · 看看远处的风景。','跟拍镜头 · 靠近这位骑手。','细节镜头 · 看一看羽毛与机械。'][state.camera])}
+function quietToggle(){state.quiet=!state.quiet;document.body.classList.toggle('quiet',state.quiet)}
+async function fullscreen(){try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()}catch(e){toast('当前预览窗口不支持全屏，请在独立浏览器窗口打开。')}}
+async function capture(){try{app.renderer.render({container:app.stage});app.canvas.toBlob(blob=>{if(!blob){toast('截图暂不可用，请使用浏览器截图。');return}const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`pelican-coast-${state.targetNight?'night':'sunset'}-${Date.now()}.png`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000);toast('已保存当前画面。')},'image/png')}catch(e){toast('截图受浏览器限制，请使用系统截图。')}}
+$('camera').onclick=cameraToggle;$('sunset').onclick=()=>setTheme(0);$('night').onclick=()=>setTheme(1);$('spring').onclick=()=>setSeason(0);$('summer').onclick=()=>setSeason(1);$('autumn').onclick=()=>setSeason(2);$('winter').onclick=()=>setSeason(3);$('outfit').onclick=cycleOutfit;$('rain').onclick=setRain;$('pause').onclick=pauseToggle;$('jump').onclick=jump;$('fullscreen').onclick=fullscreen;$('film').onclick=quietToggle;$('capture').onclick=capture;
+$('speed').oninput=e=>{state.targetSpeed=Number(e.target.value);$('speedValue').textContent=e.target.value};
+$('sound').onclick=soundToggle;
+$('boost').onpointerdown=e=>{e.preventDefault();$('boost').setPointerCapture?.(e.pointerId);boost(true)};for(const ev of['pointerup','pointercancel','lostpointercapture'])$('boost').addEventListener(ev,()=>boost(false));
+$('infoBtn').onclick=()=>$('info').classList.toggle('open');$('closeInfo').onclick=()=>$('info').classList.remove('open');
+window.addEventListener('keydown',e=>{if(e.target instanceof HTMLInputElement)return;if(e.repeat&&e.code!=='ShiftLeft'&&e.code!=='ShiftRight')return;if(e.code==='Space'){e.preventDefault();jump()}if(e.key==='Shift'){e.preventDefault();boost(true)}if(e.key==='ArrowUp'){e.preventDefault();speedNudge(2);return}if(e.key==='ArrowDown'){e.preventDefault();speedNudge(-2);return}switch(e.key.toLowerCase()){case'b':bell();break;case'p':pauseToggle();break;case'n':setTheme(1-state.targetNight);break;case'r':setRain();break;case'm':soundToggle();break;case'o':cycleOutfit();break;case'1':setSeason(0);break;case'2':setSeason(1);break;case'3':setSeason(2);break;case'4':setSeason(3);break;case'k':toggleControls();break;case'/':case'?':$('info').classList.toggle('open');break;case'h':quietToggle();break;case'f':fullscreen();break;case'c':cameraToggle();break;case'escape':$('info').classList.remove('open');document.body.classList.remove('show-advanced');break}});
+window.addEventListener('keyup',e=>{if(e.key==='Shift')boost(false)});window.addEventListener('blur',()=>boost(false));
+window.addEventListener('pointermove',e=>{state.mouseX=clamp(e.clientX/innerWidth*2-1,-1,1);state.mouseY=clamp(e.clientY/innerHeight*2-1,-1,1)});
+app.canvas.addEventListener('dblclick',quietToggle);app.canvas.addEventListener('pointerdown',e=>{let x=(((e.clientX-root.x)/root.scale.x)-world.x)/world.scale.x+world.pivot.x,y=(((e.clientY-root.y)/root.scale.y)-world.y)/world.scale.y+world.pivot.y;if(x>710&&x<1260&&y>190&&y<660)bell()});
+let last=performance.now();document.addEventListener('visibilitychange',()=>{last=performance.now();if(document.hidden)boost(false)});
+function resize(){const w=innerWidth,h=innerHeight;app.renderer.resize(w,h);let scale=Math.max(w/W,h/H);if(w/h<1.05){scale=h/H;root.scale.set(scale);root.position.set(w*.5-930*scale,(h-H*scale)/2)}else{root.scale.set(scale);root.position.set((w-W*scale)/2,(h-H*scale)/2)}}
+window.addEventListener('resize',resize);resize();
+$('engine').textContent=mode==='PixiJS'?'PIXIJS 8 · WEBGL':'CANVAS 2D · 兼容模式';
+$('renderInfo').textContent=mode==='PixiJS'?`当前使用 PixiJS ${P.VERSION} / WebGL。角色和静态景物只生成一次贴图；每帧更新位置、旋转、少量柔性形状与粒子。`:'当前使用 Canvas2D 兼容模式：PixiJS CDN 或 WebGL 暂不可用。场景与机械动画正常运行。联网后刷新可切换至 PixiJS；本页不会上传任何操作或数据。';
+// ------------------------------------------------------------ Per-frame updates
+let roadOffset=0,railOffset=0,landOffset=0,frameCount=0,uiElapsed=0,fpsSamples=[],previousJump=-1;
+function update(dt){
+ state.night=ease(state.night,state.targetNight,1.5,dt);state.rain=ease(state.rain,state.targetRain,2.2,dt);state.camX=ease(state.camX,state.mouseX*7,2,dt);state.camY=ease(state.camY,state.mouseY*3,2,dt);
+ let simDt=state.paused?0:dt;
+ if(simDt){
+  state.time+=simDt;state.boost=ease(state.boost,state.boostHeld?1:0,2.8,simDt);state.speed=ease(state.speed,state.targetSpeed+(state.boostHeld?22:0),1.8,simDt);state.distance+=state.speed/3600*simDt;
+  let pxSpeed=state.speed/3.6/METERS_PER_PIXEL;state.wheel+=pxSpeed/RADIUS*simDt;state.crank=state.wheel/GEAR;roadOffset+=pxSpeed*simDt;railOffset+=pxSpeed*.53*simDt;landOffset+=pxSpeed*.027*simDt;
+  state.landing=Math.max(0,state.landing-simDt*3.8);state.bell=Math.max(0,state.bell-simDt*.95);
+  if(state.jumpT>=0){state.jumpT+=simDt;let j=state.jumpT;if(j<.14){state.jumpY=Math.sin(j/.14*Math.PI)*4;state.jumpPitch=-.015*j/.14}else if(j<1.18){let p=(j-.14)/1.04;state.jumpY=-145*Math.sin(Math.PI*p);state.jumpPitch=-.11*Math.sin(TAU*p)}else{state.jumpT=-1;state.jumpY=0;state.jumpPitch=0;state.landing=1;for(let i=0;i<26;i++)emitParticle(958+random(-205,203),GROUND+random(-2,2),random(-210,40),random(-65,-10),random(.3,.85),random(.3,1),1)}}
+  clothStep(simDt);
+  dustAccum+=simDt*(2+state.boost*23+state.rain*12);while(dustAccum>1){dustAccum--;emitParticle(958-178+random(-9,6),GROUND-2,random(-190,-85),random(-18,-52),random(.25,.7),random(.12,.5),state.rain>.5?2:0)}
+  for(const p of particlePool){if(p.life<=0)continue;p.life-=simDt;if(p.life<=0){p.s.visible=false;continue}p.x+=p.vx*simDt;p.y+=p.vy*simDt;p.vy+=(p.type===2?240:65)*simDt;const f=p.life/p.max;p.s.position.set(p.x,p.y);p.s.scale.set(p.scale*(p.type===1?1+(1-f)*2:1));p.s.alpha=Math.min(1,f*3)*(.5+state.boost*.25);p.s.rotation+=p.rot*simDt}
+ }
+ const t=state.time,n=state.night,sn=seasonIndex();nightSky.alpha=n;sunDisc.alpha=1-n;sunHalo.alpha=(1-n)*.52;moon.alpha=n;moonHalo.alpha=n*.44;seaNight.alpha=n;roadNight.alpha=n;nightGrade.alpha=n*.56;daySky.alpha=1;seasonGrade.clear();const gradeCols=[0xffdbea,0xffd58c,0xd47b3f,0xcfeeff];seasonGrade.rect(-100,-80,1800,1080).fill({color:gradeCols[sn],alpha:[.055,.035,.07,.075][sn]*(1-n*.35)});seasonWeather.clear();for(let i=0;i<seasonDots.length;i++){const q=seasonDots[i],xx=mod(q.x-t*(sn===0?24:sn===2?48:sn===3?18:8)*(1+q.s),W+120)-60,yy=sn===3?mod(q.y+t*(20+q.s*28),H+120)-60:q.y+Math.sin(t*(.7+q.s*.2)+q.p)*12;if(sn===0){seasonWeather.ellipse(xx,yy,3*q.s,1.7*q.s).fill({color:i%2?0xffd4e4:0xfff0b6,alpha:.28})}else if(sn===1){seasonWeather.circle(xx,yy,1.2*q.s).fill({color:0xfff3a2,alpha:.13+.08*Math.sin(t*3+q.p)})}else if(sn===2){seasonWeather.ellipse(xx,yy,4*q.s,2*q.s).fill({color:i%3?0xc76e2e:0xe3b759,alpha:.32})}else{seasonWeather.circle(xx,yy,1.8*q.s).fill({color:0xf4fdff,alpha:.48})}}
+ stars.forEach(({s,phase,mag})=>s.alpha=n*mag*(.68+.32*Math.sin(t*.8+phase)));
+ clouds.forEach(({s,x,y,speed},i)=>{s.x=mod(x-t*speed+440,2340)-440;s.y=y+Math.sin(t*.05+i)*4;s.alpha=.8-n*.5});
+ islandLayers.forEach(({s,factor},i)=>{s.x=-mod(roadOffset*factor,450);s.alpha=[.46,.53,.77][i]*(1-n*.32)});
+ coast.x=1070-Math.sin(t*.027)*70-state.camX*.5;coast.alpha=1-n*.24;
+ const beaconX=coast.x+278*.77,beaconY=569-149*.77;
+ beacon.clear();const sweep=Math.sin(t*.38),beamWidth=17+Math.abs(Math.cos(t*.38))*8;let bx=beaconX+sweep*470;
+ beacon.poly([beaconX,beaconY,bx,beaconY-25-beamWidth,bx,beaconY+beamWidth]).fill({color:0xfff1c7,alpha:n*(.035+Math.abs(sweep)*.07)});gline(beacon,beaconX,beaconY,bx,beaconY-13,0xfce5b2,.7,n*.13);
+ beaconGlow.position.set(beaconX,beaconY);beaconGlow.alpha=.06+n*(.35+.3*Math.abs(sweep));tinyWindows.forEach((s,i)=>{s.x=coast.x+(345+Math.floor(i/2)*32+(i%2)*11)*.77;s.alpha=n*.72});
+ yacht.x=740-mod(t*6,1900);yacht.y=533+Math.sin(t*1.5)*1.8;yacht.rotation=Math.sin(t*1.2)*.018;yacht.alpha=1-n*.47;
+ for(const g of gulls){g.x-=simDt*(10+g.scale*12);if(g.x<-50)g.x=1700;let x=g.x,y=g.y+Math.sin(t*.4+g.phase)*13,f=Math.sin(t*3.4+g.phase);g.g.clear();g.g.position.set(x,y);g.g.scale.set(g.scale);g.g.moveTo(-12,-f*5).quadraticCurveTo(-5,-4,0,0).quadraticCurveTo(5,-4,12,-f*5).stroke({color:0x2b5c61,width:1.4,alpha:.65-n*.4})}
+ shimmerDay.alpha=(1-n)*.18;shimmerNight.alpha=n*.15;
+ waves.forEach(w=>{w.s.x=mod(w.baseX-landOffset*w.dep*.27-t*w.speed,1800)-100;w.s.y=w.baseY+Math.sin(t*1.4+w.phase)*(.3+w.dep*1.7);w.s.alpha=(.07+.12*(1+Math.sin(t*1.8+w.phase))*.5)*(1-n*.47)});
+ reflectionWaves.forEach(w=>{w.s.x=w.x+(n*16)+Math.sin(t*1.55+w.phase)*(4+12*w.dep);w.s.y=w.y+Math.sin(t*.8+w.phase)*(.7+w.dep);w.s.alpha=w.a*(.25+.75*(.5+.5*Math.sin(t*2.1+w.phase)))*(1-n*.42);w.s.width=w.width*(.72+.28*Math.sin(t*1.3+w.phase));w.s.tint=n>.5?0xc3e3df:0xffddb0});
+ railCopies.forEach((r,i)=>r.x=i*640-mod(railOffset,640)-150);roadStrips.forEach((s,i)=>s.x=i*1024-mod(roadOffset,1024)-500);
+ roadside.forEach((s,i)=>{s.x=i*1200-mod(roadOffset*1.25,1200)-670;s.rotation=Math.sin(t*2.3+i)*.005});
+ wetRoad.alpha=state.rain*.14+n*.035;
+ const rideX=958+Math.sin(t*.31)*6+state.boost*13,rideY=GROUND+state.jumpY;
+ poseRider(rig);poseRider(reflectedRig);rig.r.position.set(rideX,rideY+Math.sin(state.landing*Math.PI)*2.1);rig.r.rotation=state.jumpPitch;
+ reflectedRig.r.position.set(rideX,GROUND-state.jumpY*.27);reflectedRig.r.rotation=-state.jumpPitch*.25;reflectedRig.r.alpha=(.055+state.rain*.18+n*.035)*(1-clamp(-state.jumpY/300));reflectedRig.r.scale.set(1,-.27);
+ shadow.x=rideX;shadow.alpha=1-clamp(-state.jumpY/250,0,.6);shadow.scale.x=1+Math.max(0,-state.jumpY)*.001;shadow.scale.y=1+Math.max(0,-state.jumpY)*.001;
+ tireShadowL.x=rideX-178;tireShadowR.x=rideX+178;tireShadowL.alpha=tireShadowR.alpha=.74*(1-clamp(-state.jumpY/50));
+ lampBeam.position.set(rideX+149,rideY-273);lampBeam.alpha=.13+n*.73+state.rain*.15;lampBeam.rotation=state.jumpPitch;lightPool.alpha=.02+n*.13+state.rain*.04;
+ for(const f of floaters){f.s.x=mod(f.x-t*f.speed*(1+state.boost*.6),1800)-100;f.s.y=f.y+Math.sin(t*.7+f.phase)*16;f.s.alpha=(.12+.22*(.5+.5*Math.sin(t+f.phase)))*(.32+n*.68+state.boost*.3)}
+ speedLines.clear();if(state.boost>.08){for(let i=0;i<21;i++){let y=185+mod(i*87.31,568),x=mod(1600-i*76-t*(420+i*18),1880)-160,len=(35+i*5)*state.boost;if(x<590||x>1250)gline(speedLines,x,y,x+len,y-1,0xe0f4d5,.55+(i%3)*.2,state.boost*.13)}}
+ bellRings.clear();if(state.bell>0){let p=1-state.bell;for(let i=0;i<3;i++){let r=p*64-i*12;if(r>0)bellRings.circle(rideX+136,rideY-309,r).stroke({color:0xffe5aa,width:1,alpha:state.bell*.42})}}
+ layers.rain.visible=state.rain>.002;layers.rain.alpha=state.rain;
+ if(state.rain>.002){raindrops.forEach(d=>{d.x-=simDt*(220+state.speed*4);d.y+=simDt*d.speed;if(d.y>H+60){d.y=-80-rand()*180;d.x=random(-60,1800)}if(d.x<-100)d.x=1750;d.s.position.set(d.x,d.y)});splashes.clear();for(const a of splashData){const p=mod(t*a.speed+a.p,1),rx=1+p*12;splashes.ellipse(a.x,a.y,rx,rx*.2).stroke({color:0xbfe6dc,width:.6,alpha:(1-p)*.21})}}
+ state.cameraZoom=ease(state.cameraZoom,[1,1.22,1.43][state.camera],2.7,dt);state.cameraFocusX=ease(state.cameraFocusX,state.camera?960:900,2.7,dt);state.cameraFocusY=ease(state.cameraFocusY,state.camera?477:530,2.7,dt);state.cameraScreenX=ease(state.cameraScreenX,state.camera?820:900,2.7,dt);state.cameraScreenY=ease(state.cameraScreenY,state.camera?457:530,2.7,dt);world.pivot.set(state.cameraFocusX,state.cameraFocusY);world.position.set(state.cameraScreenX-state.camX,state.cameraScreenY-state.camY);world.scale.set(state.cameraZoom*(1+state.boost*.018));if(state.boost>.1){world.x+=Math.sin(t*37)*.28*state.boost;world.y+=Math.cos(t*31)*.20*state.boost}
+ if(audio){audio.filter.frequency.setTargetAtTime(600+state.speed*18+state.rain*500,audio.ctx.currentTime,.2);audio.gain.gain.setTargetAtTime(.25+state.boost*.15+state.rain*.14,audio.ctx.currentTime,.3)}
+ uiElapsed+=dt;if(uiElapsed>.12){uiElapsed=0;$('speedNumber').textContent=Math.round(state.speed).toString().padStart(2,'0');$('cadence').textContent=Math.round(state.speed/3.6/.34/GEAR/TAU*60);$('distance').textContent=state.distance.toFixed(2);$('rideState').textContent=state.jumpT>=0?'离地的这一秒':state.boost>.4?'迎风加速':state.rain>.5?'雨中骑行':n>.5?'月下巡航':'海岸巡航';bars.forEach((b,i)=>b.classList.toggle('on',i<state.speed/64*30));if(fpsSamples.length)$('fps').textContent=Math.round(1000/(fpsSamples.reduce((a,b)=>a+b,0)/fpsSamples.length))}
+}
+function loop(now){const elapsed=now-last;last=now;if(!document.hidden){let dt=Math.min(.085,Math.max(.001,elapsed/1000));if(elapsed>1&&elapsed<500){fpsSamples.push(elapsed);if(fpsSamples.length>40)fpsSamples.shift()}update(dt);app.renderer.render({container:app.stage});frameCount++}requestAnimationFrame(loop)}
+// Settle the cloth before the first frame so the page never opens with a rigid scarf.
+for(let i=0;i<240;i++){state.time+=1/120;clothStep(1/120)}state.time=0;setSeason(state.season,true);$('outfit').textContent='装扮：'+TIER_NAMES[tierIndex()];updateCopy();update(.016);app.renderer.render({container:app.stage});
+$('loader').classList.add('out');setTimeout(()=>$('loader').remove(),900);
+if(matchMedia('(prefers-reduced-motion: reduce)').matches&&!TEST.has('motion')){pauseToggle();toast('已按系统的减少动态效果偏好暂停。点击「继续」开始骑行。')}
+if(TEST.get('night')==='1'){setTheme(1);state.night=1}if(TEST.get('rain')==='1'){setRain();state.rain=1}if(TEST.get('season')){const si={spring:0,summer:1,autumn:2,winter:3}[TEST.get('season')];if(si!==undefined)setSeason(si,true)}if(TEST.get('outfitTier')){state.outfitTier=clamp(Number(TEST.get('outfitTier'))||0,0,4);$('outfit').textContent='装扮：'+TIER_NAMES[tierIndex()];updateCopy()}
+window.__PELICAN__={state,engine:mode,app,rig,step(dt=1/60,n=1){for(let i=0;i<n;i++)update(dt);app.renderer.render({container:app.stage})},setTheme,setSeason,setRain,cycleOutfit,jump,pause:pauseToggle,boost,camera:cameraToggle,assets:assets.size};
+last=performance.now();requestAnimationFrame(loop);
+})().catch(err=>{console.error(err);const d=document.getElementById('loading-detail');if(d)d.textContent='画面初始化遇到问题：'+err.message;const l=document.getElementById('loader');if(l){l.style.pointerEvents='auto';const b=document.createElement('button');b.textContent='使用兼容画布重试';b.className='mini';b.style.margin='20px auto';b.onclick=()=>{const u=new URL(location.href);u.searchParams.set('compat','1');location.href=u};l.appendChild(b)}});
+
+</script>
+</body>
+</html>
